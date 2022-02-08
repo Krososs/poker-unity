@@ -20,7 +20,9 @@ public class GameManager : MonoBehaviour
     public GameObject user8_data;*/
 
     public GameObject[] user_bets; //poke z chipami + ilością postawionych
-    public GameObject[] user_data; //pole z nickname + ilość żetonów
+    public GameObject[] user_nickname; //pole z nickname + ilość żetonów
+    public GameObject[] user_chips;
+    //public GameObject[] user_chips;
 
 
     public GameObject panel;
@@ -49,7 +51,7 @@ public class GameManager : MonoBehaviour
 
     void Start(){
         start_game();
-        //SetUserData();
+        SetUserData();
         all_bet();
         UpdateGameState(GameState.Add_money);
     }
@@ -107,26 +109,29 @@ public class GameManager : MonoBehaviour
 
     void SetUserData(){
 
-        Debug.Log(user_data.Length);
-        for (int i =0; i<user_data.Length; i++){
+        
+
+        for (int i =0; i<user_nickname.Length; i++){
             GameObject _nickname = Instantiate(nickname, new Vector3(0,0,0), Quaternion.identity);
             GameObject _chips = Instantiate(chips, new Vector3(0,0,0), Quaternion.identity);
 
-            _nickname.transform.SetParent(user_data[i].transform,false);
-            _chips.transform.SetParent(user_data[i].transform,false);
+            _nickname.transform.SetParent(user_nickname[i].transform,false);
+            _chips.transform.SetParent(user_chips[i].transform,false);
 
             _nickname.GetComponent<Text>().text = "DamolPL";
             _chips.GetComponent<Text>().text = "99999";
 
             
-            //Debug.Log(_chips.GetComponent<Text>().text);
+            
         }
-        user_data[0].transform.SetParent(panel.transform,false);
+        
+        
     }
+    
 
     void ProcessServerRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
-        Debug.Log(node["valid"]);
+        Debug.Log(node);
 
     }
 
