@@ -105,7 +105,7 @@ public class GameManager : MonoBehaviour
     void all_bet(){
 
         for (int i =0; i<user_bets.Length; i++){
-            GameObject bet = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
+            GameObject bet = Instantiate(big_bet, new Vector3(0,0,0), Quaternion.identity);
             GameObject txt = Instantiate(text, new Vector3(0,0,0), Quaternion.identity);
             bet.transform.SetParent(user_bets[i].transform,false);
             txt.transform.SetParent(user_bets[i].transform,false);
