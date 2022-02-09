@@ -10,7 +10,7 @@ using System.Text;
 using UnityEngine.SceneManagement;
 
 
-public class LoginButton : MonoBehaviour
+public class LoginMenu : MonoBehaviour
 {
 
     [Serializable]   

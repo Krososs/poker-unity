@@ -83,7 +83,7 @@ public class GameManager : MonoBehaviour
    }
 
    public void SetUsername(){
-       string recivedUsername = LoginButton.username;
+       string recivedUsername = LoginMenu.username;
        username=recivedUsername;
        Debug.Log(recivedUsername);
 

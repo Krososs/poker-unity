@@ -10,7 +10,7 @@ using System.Text;
 using UnityEngine.SceneManagement;
 
 
-public class Register : MonoBehaviour
+public class RegisterMenu : MonoBehaviour
 {
 
     [Serializable]   
