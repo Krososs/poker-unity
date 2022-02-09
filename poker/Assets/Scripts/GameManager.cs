@@ -3,22 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
- using UnityEngine.UI;
+using UnityEngine.UI;
 using System.Linq;
 using SimpleJSON;
 
 public class GameManager : MonoBehaviour
-{
-    /*
-    public GameObject user1_data;
-    public GameObject user2_data;
-    public GameObject user3_data;
-    public GameObject user4_data;
-    public GameObject user5_data;
-    public GameObject user6_data;
-    public GameObject user7_data;
-    public GameObject user8_data;*/
-
+{   
     public GameObject[] user_bets; //poke z chipami + ilością postawionych
     public GameObject[] user_nickname; //pole z nickname + ilość żetonów
     public GameObject[] user_chips;
@@ -147,9 +137,7 @@ public class GameManager : MonoBehaviour
     
 
     void ProcessServerRespone(string rawRespone){
-        JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
-        Debug.Log(node);
-
+        JSONNode node = SimpleJSON.JSON.Parse(rawRespone);   
     }
 
     IEnumerator GetRequest(string uri){

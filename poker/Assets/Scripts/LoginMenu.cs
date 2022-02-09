@@ -29,10 +29,13 @@ public class LoginMenu : MonoBehaviour
     public GameObject panel;
    
     public void Click(){
-      
+        var hash = new Hash128();
+        hash.Append(password);
+        string HashedPass=hash.ToString();
+     
         MyClass myObject = new MyClass();
         myObject.username=username;
-        myObject.password=password;
+        myObject.password=HashedPass;
 
         string n = JsonUtility.ToJson(myObject);
         //Debug.Log(n);
@@ -56,10 +59,12 @@ public class LoginMenu : MonoBehaviour
     void ProcessServerRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
         Debug.Log(node["valid"]);
+        Debug.Log(node["result"]["token"]);
 
         if(node["valid"]==true){
             Debug.Log("Zalogowano");
             GameManager.username=username;
+            MainMenu.token= node["result"]["token"];
             SceneManager.LoadScene(3);
         }
         else{
