@@ -5,14 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class BasicMenu : MonoBehaviour
 {
-
-    
+   
     // Start is called before the first frame update
     void Start()
     {
         
     }
-
 
     public void LoginScene(){
         SceneManager.LoadScene(1);       
