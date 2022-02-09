@@ -7,15 +7,7 @@ using UnityEngine.Networking;
 using System.Linq;
 using SimpleJSON;
 using System.Text;
-
-/*
-[Serializable]
-public class Data{
-
-    public string playerUsername;
-    public string playerPassword;
-}*/
-
+using UnityEngine.SceneManagement;
 
 
 public class LoginButton : MonoBehaviour
@@ -30,57 +22,58 @@ public class LoginButton : MonoBehaviour
     }
 
        
-    private string username;
+    public static string username;
     private string password;
+
+    public GameObject error;
+    public GameObject panel;
    
     public void Click(){
-       //name = usernameField.GetComponent<Text>().text;
-
-        Debug.Log(username);
-        Debug.Log(password);
-
-
+      
         MyClass myObject = new MyClass();
         myObject.username=username;
         myObject.password=password;
 
         string n = JsonUtility.ToJson(myObject);
-        Debug.Log(n);
-
-        
-
-
+        //Debug.Log(n);
         string adress="http://localhost:3010/login";
 
         StartCoroutine(GetRequest(adress,n)); 
-
-       
-
     }
 
-
+    public void Back(){
+        SceneManager.LoadScene(0);
+    }
 
     public void setPassword(string s){
         password=s;
-        Debug.Log(password);
     }
 
     public void setUSername(string s){
-        username=s;
-        Debug.Log(username);
+        username=s;      
     }
 
     void ProcessServerRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
-        Debug.Log(node);
+        Debug.Log(node["valid"]);
+
+        if(node["valid"]==true){
+            Debug.Log("Zalogowano");
+            GameManager.username=username;
+            SceneManager.LoadScene(3);
+        }
+        else{
+
+            GameObject _error = Instantiate(error, new Vector3(0,0,0), Quaternion.identity);
+            _error.transform.SetParent(panel.transform,false);
+            _error.GetComponent<Text>().text = "Wrong username or password";
+        }
 
     }
 
     IEnumerator GetRequest(string uri, string n){
 
         byte[] bytes = Encoding.ASCII.GetBytes(n);
-        //string n="";
-
         UnityWebRequest www = UnityWebRequest.Post(uri,"");
         UploadHandler uploader = new UploadHandlerRaw(bytes);
 
@@ -91,16 +84,13 @@ public class LoginButton : MonoBehaviour
         yield return www.SendWebRequest();
 
         if(www.result != UnityWebRequest.Result.Success){
-           Debug.LogError("Something went wrong " + www.error);
-           
+           Debug.LogError("Something went wrong " + www.error);         
         }
         else
         {
-            Debug.Log(www.downloadHandler.text);
             ProcessServerRespone(www.downloadHandler.text);
         }
 
     }
-    
-    
+       
 }

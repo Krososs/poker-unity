@@ -31,11 +31,11 @@ public class GameManager : MonoBehaviour
     public GameObject small_bet;
     public GameObject medium_bet;
     public GameObject big_bet;
-
     public GameObject text;
-
     public GameObject nickname;
     public GameObject chips;
+
+    public static string username;
 
 
     public static GameManager Instance;
@@ -46,6 +46,11 @@ public class GameManager : MonoBehaviour
 
     void Awake() {
         Instance=this;
+        
+    }
+
+    void Update() {
+        Debug.Log(username);
         
     }
 
@@ -75,6 +80,13 @@ public class GameManager : MonoBehaviour
         }
 
         OnGameStateChanged?.Invoke(newState);
+   }
+
+   public void SetUsername(){
+       string recivedUsername = LoginButton.username;
+       username=recivedUsername;
+       Debug.Log(recivedUsername);
+
    }
 
    void Handle_Draw_test(){
@@ -118,7 +130,12 @@ public class GameManager : MonoBehaviour
             _nickname.transform.SetParent(user_nickname[i].transform,false);
             _chips.transform.SetParent(user_chips[i].transform,false);
 
-            _nickname.GetComponent<Text>().text = "DamolPL";
+            if (i == 6)
+                _nickname.GetComponent<Text>().text = username;               
+            else
+                _nickname.GetComponent<Text>().text = "DamolPL";
+                
+
             _chips.GetComponent<Text>().text = "99999";
 
             
