@@ -3,22 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
- using UnityEngine.UI;
+using UnityEngine.UI;
 using System.Linq;
 using SimpleJSON;
 
 public class GameManager : MonoBehaviour
-{
-    /*
-    public GameObject user1_data;
-    public GameObject user2_data;
-    public GameObject user3_data;
-    public GameObject user4_data;
-    public GameObject user5_data;
-    public GameObject user6_data;
-    public GameObject user7_data;
-    public GameObject user8_data;*/
-
+{   
     public GameObject[] user_bets; //poke z chipami + ilością postawionych
     public GameObject[] user_nickname; //pole z nickname + ilość żetonów
     public GameObject[] user_chips;
@@ -31,11 +21,11 @@ public class GameManager : MonoBehaviour
     public GameObject small_bet;
     public GameObject medium_bet;
     public GameObject big_bet;
-
     public GameObject text;
-
     public GameObject nickname;
     public GameObject chips;
+
+    public static string username;
 
 
     public static GameManager Instance;
@@ -46,6 +36,11 @@ public class GameManager : MonoBehaviour
 
     void Awake() {
         Instance=this;
+        
+    }
+
+    void Update() {
+        Debug.Log(username);
         
     }
 
@@ -77,6 +72,13 @@ public class GameManager : MonoBehaviour
         OnGameStateChanged?.Invoke(newState);
    }
 
+   public void SetUsername(){
+       string recivedUsername = LoginMenu.username;
+       username=recivedUsername;
+       Debug.Log(recivedUsername);
+
+   }
+
    void Handle_Draw_test(){
         Debug.Log("I am drawing cards");
     }
@@ -93,7 +95,7 @@ public class GameManager : MonoBehaviour
     void all_bet(){
 
         for (int i =0; i<user_bets.Length; i++){
-            GameObject bet = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
+            GameObject bet = Instantiate(big_bet, new Vector3(0,0,0), Quaternion.identity);
             GameObject txt = Instantiate(text, new Vector3(0,0,0), Quaternion.identity);
             bet.transform.SetParent(user_bets[i].transform,false);
             txt.transform.SetParent(user_bets[i].transform,false);
@@ -118,7 +120,12 @@ public class GameManager : MonoBehaviour
             _nickname.transform.SetParent(user_nickname[i].transform,false);
             _chips.transform.SetParent(user_chips[i].transform,false);
 
-            _nickname.GetComponent<Text>().text = "DamolPL";
+            if (i == 6)
+                _nickname.GetComponent<Text>().text = username;               
+            else
+                _nickname.GetComponent<Text>().text = "DamolPL";
+                
+
             _chips.GetComponent<Text>().text = "99999";
 
             
@@ -130,9 +137,7 @@ public class GameManager : MonoBehaviour
     
 
     void ProcessServerRespone(string rawRespone){
-        JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
-        Debug.Log(node);
-
+        JSONNode node = SimpleJSON.JSON.Parse(rawRespone);   
     }
 
     IEnumerator GetRequest(string uri){

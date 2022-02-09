@@ -9,6 +9,21 @@ EditorBuildSettings:
     path: Assets/Scenes/BasicScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
+    path: Assets/Scenes/LoginScene.unity
+    guid: 32392fa986c8cc04a9ecca39d0d84776
+  - enabled: 1
+    path: Assets/Scenes/RegisterScene.unity
+    guid: f5941d0821e9f274bad75b3cc56e6115
+  - enabled: 1
+    path: Assets/Scenes/MenuScene.unity
+    guid: 75c0817bd51d9814a981fffd9b1ce876
+  - enabled: 1
+    path: Assets/Scenes/RankingScene.unity
+    guid: cdd17c6c5afae014ebb0a3d93fb18395
+  - enabled: 1
+    path: Assets/Scenes/TableListScene.unity
+    guid: 7f443bf5fc96b38488f8b7fe0ef3be95
+  - enabled: 1
     path: Assets/Scenes/GameScene.unity
     guid: 12bf383b844a5674a82f7ea807a278e2
   m_configObjects: {}
