@@ -12,12 +12,7 @@ public class GameManager : MonoBehaviour
     public GameObject[] user_bets; //poke z chipami + ilością postawionych
     public GameObject[] user_nickname; //pole z nickname + ilość żetonów
     public GameObject[] user_chips;
-    //public GameObject[] user_chips;
-
-
     public GameObject panel;
-
-
     public GameObject small_bet;
     public GameObject medium_bet;
     public GameObject big_bet;
@@ -26,6 +21,8 @@ public class GameManager : MonoBehaviour
     public GameObject chips;
 
     public static string username;
+    public static string username_token;
+    public static string table_id;
 
 
     public static GameManager Instance;
@@ -40,15 +37,18 @@ public class GameManager : MonoBehaviour
     }
 
     void Update() {
+        Debug.Log("Witam gracza");
         Debug.Log(username);
+        Debug.Log("Przy stole");
+        Debug.Log(table_id);
         
     }
 
     void Start(){
-        start_game();
+        //start_game();
         SetUserData();
         all_bet();
-        UpdateGameState(GameState.Add_money);
+        //UpdateGameState(GameState.Add_money);
     }
    
    public void UpdateGameState(GameState newState){
@@ -86,9 +86,9 @@ public class GameManager : MonoBehaviour
     public void start_game(){
 
         //pobieranie tokena
-        string token = "26999ed8d2d64a70a2ff55865a571d97";
-        string adress="http://localhost:3010/auth?token=";
-        StartCoroutine(GetRequest(adress+token));       
+        //string token = "26999ed8d2d64a70a2ff55865a571d97";
+       // string adress="http://localhost:3010/auth?token=";
+        //StartCoroutine(GetRequest(adress+token));       
 
     }
     //funkcja testowa 

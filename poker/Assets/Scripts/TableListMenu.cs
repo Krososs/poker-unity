@@ -21,7 +21,7 @@ public class TableListMenu : MonoBehaviour
 
     void Start(){
         Debug.Log("Szukam stołów");
-        token="db0bd26bac28473c9731cc88463ff97f";
+        //token="db0bd26bac28473c9731cc88463ff97f";
         Debug.Log("Mój token to: "+token);
         string adress="http://localhost:3010/game/list?token="+token;
         StartCoroutine(GetRequest(adress)); 
@@ -42,10 +42,7 @@ public class TableListMenu : MonoBehaviour
     }
 
     void ProcessServerRespone(string rawRespone){
-        JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
-        //var node_obj=node.AsObject();
-
-        //Debug.Log(node_obj);
+        JSONNode node = SimpleJSON.JSON.Parse(rawRespone);     
         Debug.Log(node["result"]);
 
         int tables =node["result"]["number_of_tables"];
@@ -67,9 +64,6 @@ public class TableListMenu : MonoBehaviour
 
             players.transform.SetParent(panel.transform,false);
             players.GetComponent<Text>().text = "Playes: "+entry.Value["number_of_players"];
-
-            //state.transform.SetParent(panel.transform,false);
-            //state.GetComponent<Text>().text = "Blabla"+0;
 
             panel.transform.SetParent(scrollciew.transform,false);          
             Debug.Log(entry.Value);

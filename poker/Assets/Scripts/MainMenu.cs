@@ -13,7 +13,8 @@ public class MainMenu : MonoBehaviour
     public static string token;
 
     void Start(){
-        ListScene.token=token;
+        TableListMenu.token=token;
+        Debug.Log("Token w menu:" + token);
 
     }
 
