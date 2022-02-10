@@ -5,11 +5,14 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using System.Linq;
+using System.Text;
 using SimpleJSON;
 
-public class TableListMenu : MonoBehaviour
+public class ListScene : MonoBehaviour
 {
     public static string token;
+
+    public GameObject[] panels;
 
     public GameObject scrollciew;
 
@@ -18,6 +21,9 @@ public class TableListMenu : MonoBehaviour
     public GameObject table_id;
     public GameObject number_of_players;
     public GameObject game_state;
+
+    public GameObject join_button;
+
 
     void Start(){
         Debug.Log("Szukam stołów");
@@ -37,10 +43,6 @@ public class TableListMenu : MonoBehaviour
        SceneManager.LoadScene(3);
     }
 
-    public void JoinTable(){
-
-    }
-
     void ProcessServerRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
         //var node_obj=node.AsObject();
@@ -54,28 +56,59 @@ public class TableListMenu : MonoBehaviour
 
         Debug.Log("Stoły");
         Debug.Log(node["result"]["tables"]);
-       
+
+        
+            //Debug.Log(node["result"]["tables"][i]);
+            //GameObject panel = Instantiate(Table_panel, new Vector3(0,0,0), Quaternion.identity);
+            //GameObject id = Instantiate(table_id, new Vector3(0,0,0), Quaternion.identity);
+            //id.transform.SetParent(panel.transform,false);
+            //id.GetComponent<Text>().text = "jeden";
+        int i=0;
         foreach( KeyValuePair<string, JSONNode> entry in node["result"]["tables"])
         {
             GameObject id = Instantiate(table_id, new Vector3(0,0,0), Quaternion.identity);
             GameObject players = Instantiate(number_of_players, new Vector3(0,0,0), Quaternion.identity);
             GameObject state = Instantiate(game_state, new Vector3(0,0,0), Quaternion.identity);
-            GameObject panel = Instantiate(Table_panel, new Vector3(0,0,0), Quaternion.identity);
+           
+           /*
+            GameObject prefab = Resources.Load ("table") as GameObject;
+            GameObject panel = Instantiate(prefab, new Vector3(0,0,0), Quaternion.identity);
+            table t = new table();
+            t = panel.GetComponent("table") as table;
+            //zmiany           
+            //t.name="siema";
+            t.token=i;*/
+            GameObject t = new GameObject("table");
+            //tables[0]=t;
+            //t.token=0;
+            //table.token;
+            //t.token=i;
 
-            id.transform.SetParent(panel.transform,false);
+           
+
+            id.transform.SetParent(t.transform,false);
             id.GetComponent<Text>().text = entry.Key;
 
-            players.transform.SetParent(panel.transform,false);
-            players.GetComponent<Text>().text = "Playes: "+entry.Value["number_of_players"];
+            players.transform.SetParent(t.transform,false);
+            players.GetComponent<Text>().text = "Playes: "+0;
 
-            //state.transform.SetParent(panel.transform,false);
-            //state.GetComponent<Text>().text = "Blabla"+0;
+            state.transform.SetParent(t.transform,false);
+            state.GetComponent<Text>().text = "Blabla"+0;
 
-            panel.transform.SetParent(scrollciew.transform,false);          
-            Debug.Log(entry.Value);
-            Debug.Log(entry.Key);            
+            t.transform.SetParent(scrollciew.transform,false);
+
+           
+            Debug.Log(entry);
+            Debug.Log(entry.Key);
+            i+=1;
+            
         }
-      
+
+        
+
+        
+
+        Debug.Log("Wychodzę z funkcji");
     }
 
     IEnumerator GetRequest(string uri){
