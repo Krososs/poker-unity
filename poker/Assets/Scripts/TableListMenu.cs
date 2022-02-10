@@ -33,7 +33,6 @@ public class TableListMenu : MonoBehaviour
     }
    
     public void Back(){     
-       Debug.Log("Klikam Back");
        SceneManager.LoadScene(3);
     }
 
@@ -43,7 +42,7 @@ public class TableListMenu : MonoBehaviour
 
     void ProcessServerRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);     
-        Debug.Log(node["result"]);
+        Debug.Log(node);
 
         int tables =node["result"]["number_of_tables"];
 

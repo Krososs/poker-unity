@@ -58,17 +58,20 @@ public class LoginMenu : MonoBehaviour
 
     void ProcessServerRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
+        Debug.Log(node["result"]["user_id"]);
         Debug.Log(node["valid"]);
         Debug.Log(node["result"]["token"]);
 
         if(node["valid"]==true){
             Debug.Log("Zalogowano");
             GameManager.username=username;
+            GameManager.user_id=node["result"]["user_id"];
             MainMenu.token= node["result"]["token"];
             SceneManager.LoadScene(3);
         }
         else{
 
+            Debug.Log(node);
             GameObject _error = Instantiate(error, new Vector3(0,0,0), Quaternion.identity);
             _error.transform.SetParent(panel.transform,false);
             _error.GetComponent<Text>().text = "Wrong username or password";

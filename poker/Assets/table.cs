@@ -32,6 +32,7 @@ public class table : MonoBehaviour
             Debug.Log("Dołącza do stołu: " +table_id);
             GameManager.username_token=user_token;
             GameManager.table_id=table_id;
+            GameManager.player=false;
             SceneManager.LoadScene(6);
 
         }else{
