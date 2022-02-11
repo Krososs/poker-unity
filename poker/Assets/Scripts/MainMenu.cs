@@ -29,7 +29,7 @@ public class MainMenu : MonoBehaviour
     }
 
     void Create_game(){
-        GameManager.username_token=token;
+        GameManager.user_token=token;
         GameManager.player=true;
         string adress="http://localhost:3010/game/create?token="+token;
         StartCoroutine(PutRequest(adress));
