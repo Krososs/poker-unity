@@ -679,6 +679,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4268417533956407879, guid: 47201c897157e664daa69d86f866cc4e, type: 3}
+      propertyPath: m_Text
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 47201c897157e664daa69d86f866cc4e, type: 3}
 --- !u!1 &177445667
@@ -3631,7 +3635,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1521515314}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: 
+        m_MethodName: LeaveTable
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

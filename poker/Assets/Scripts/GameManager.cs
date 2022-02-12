@@ -12,7 +12,8 @@ using NativeWebSocket;
 
 
 public class GameManager : MonoBehaviour
-{   
+{
+//GAME OBJECTS   
     public GameObject[] user_bets; //user bet place
     public GameObject[] user_nickname; //user nickname
     public GameObject[] user_chips; // user amount of chips
@@ -50,19 +51,21 @@ public class GameManager : MonoBehaviour
     private string sit_adress;
     private string get_up_adress;
     private string status_adress;
+    private string leave_adress;
 
 //IN_GAME_VARIABLES
     private string status="NOT_READY";
     private bool is_sittng=false;
     private int user_chips_amount;
-    private bool first_join;
+    
 
     public static GameManager Instance;
 
     enum PostRequestType{
         SIT,
         GET_UP,
-        STATUS
+        STATUS,
+        LEAVE
     }
 
     public GameState State;
@@ -74,33 +77,20 @@ public class GameManager : MonoBehaviour
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //UNITY
 
-    void Awake() {
-        
+    void Awake() {       
         Instance=this;
-        first_join=true;
         state_adress="http://localhost:3010/game/"+table_id+"/state?token="+user_token;
         sit_adress="http://localhost:3010/game/"+table_id+"/sit_down?token="+user_token;
         get_up_adress="http://localhost:3010/game/"+table_id+"/get_up?token="+user_token;
         status_adress="http://localhost:3010/game/"+table_id+"/player_status?token="+user_token+"&status=";
-        
-        //http://localhost:3010/game/c37a782515bd438c86c12bf39ab7ec8c/get_up?token=46d889e170e24cb3ac1baec65eac5b14
-
-        if(player){
-            GameObject _nickname = Instantiate(nickname, new Vector3(0,0,0), Quaternion.identity);
-            GameObject _chips = Instantiate(chips, new Vector3(0,0,0), Quaternion.identity);
-            _nickname.transform.SetParent(user_nickname[6].transform,false);
-            _nickname.GetComponent<Text>().text = username;
-            _chips.transform.SetParent(user_chips[6].transform,false);
-            _chips.GetComponent<Text>().text = "0";
-
-        }
-                   
+        leave_adress="http://localhost:3010/game/"+table_id+"/leave?token="+user_token;        
+                
     }
 
      void Start(){
 
         SetupWebSocket();
-        GetState();
+        InitiateObjects();
         Debug.Log("Witam gracza");
         Debug.Log(username);
         Debug.Log("O numerze id");
@@ -108,17 +98,16 @@ public class GameManager : MonoBehaviour
         Debug.Log("Przy stole");
         Debug.Log(table_id);
 
-        if(!player){         
-            DisableButtons();
+        if(!player){
+            ManageButtons(false);         
         }else{
             is_sittng=true;
             GameObject.Find("Up/DownButton").GetComponentInChildren<Text>().text = "Get up";
+            user_nickname[6].GetComponentInChildren<Text>().text=username;
+            user_chips[6].GetComponentInChildren<Text>().text="0";
+            
         }
-
-        
-
-        //PrintGameState();
-        //SetUserData();
+        GetState();
         //all_bet();
     }
 
@@ -173,14 +162,10 @@ public class GameManager : MonoBehaviour
         Debug.Log(node);
 
         if(node["valid"]){
-            EnableButtons();
-            player=true;          
-            GameObject _nickname = Instantiate(nickname, new Vector3(0,0,0), Quaternion.identity);
-            GameObject _chips = Instantiate(chips, new Vector3(0,0,0), Quaternion.identity);
-            _nickname.transform.SetParent(user_nickname[6].transform,false);
-            _chips.transform.SetParent(user_chips[6].transform,false);
-            _nickname.GetComponent<Text>().text = username;
-            _chips.GetComponent<Text>().text = "0";
+            ManageButtons(true);
+            //player=true;                
+            user_chips[6].GetComponentInChildren<Text>().text="0";
+            user_nickname[6].GetComponentInChildren<Text>().text=username;
             GameObject.Find("Up/DownButton").GetComponentInChildren<Text>().text = "Get up";
 
         }
@@ -190,24 +175,23 @@ public class GameManager : MonoBehaviour
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
         Debug.Log(node);
         if(node["valid"]){
-            DisableButtons();
-            player=false;
-            // GameObject _nickname = Instantiate(nickname, new Vector3(0,0,0), Quaternion.identity);
-            // GameObject _chips = Instantiate(chips, new Vector3(0,0,0), Quaternion.identity);
-            // _nickname.transform.SetParent(user_nickname[6].transform,false);
-            // _chips.transform.SetParent(user_chips[6].transform,false);
-            // _nickname.GetComponent<Text>().text = "";
-            // _chips.GetComponent<Text>().text = "";
-
+            ManageButtons(false);
+            //player=false;
             GameObject.Find("Up/DownButton").GetComponentInChildren<Text>().text = "Sit";
             user_nickname[6].GetComponentInChildren<Text>().text = "";
-            user_chips[6].GetComponentInChildren<Text>().text = user_chips_amount.ToString();
-           // GameObject.Find("Up/DownButton").GetComponentInChildren<Text>().text = "Sit";
+            user_chips[6].GetComponentInChildren<Text>().text = "";
         }
    
     }
 
+    void ProcessLeaveRespone(string rawRespone){
+        JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
+        Debug.Log(node);
+        if(node["valid"]){
+            SceneManager.LoadScene(3);
+        }
 
+    }
 
     void ProcessStatusRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
@@ -262,10 +246,12 @@ public class GameManager : MonoBehaviour
                 case PostRequestType.GET_UP:
                     ProcessGetUpRespone(www.downloadHandler.text);
                     break;
+                case PostRequestType.LEAVE:
+                    ProcessLeaveRespone(www.downloadHandler.text);
+                    break;
                 default:
                     Debug.LogError("Wrong request type!");
                     break;  
-
             }
             
         }
@@ -277,24 +263,27 @@ public class GameManager : MonoBehaviour
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //GAME
 
-    private void DisableButtons(){
-        status_button.interactable=false;
-        user_button1.interactable=false;
-        user_button2.interactable=false;
-        user_button3.interactable=false;
-        
+    private void InitiateObjects(){
+        //initiate user panel data
+        for(int i=0; i<8; i++){
+            GameObject _nickname = Instantiate(nickname, new Vector3(0,0,0), Quaternion.identity);
+            GameObject _chips = Instantiate(chips, new Vector3(0,0,0), Quaternion.identity);
+            _nickname.transform.SetParent(user_nickname[i].transform,false);
+            _chips.transform.SetParent(user_chips[i].transform,false);
+        }
+        GameObject spectators = Instantiate(specators_amount, new Vector3(0,0,0), Quaternion.identity);
+        spectators.transform.SetParent(specators_panel.transform,false);
     }
-    private void EnableButtons(){
-        status_button.interactable=true;
-        user_button1.interactable=true;
-        user_button2.interactable=true;
-        user_button3.interactable=true;
 
+    void ManageButtons(bool o){
+        status_button.interactable=o;
+        user_button1.interactable=o;
+        user_button2.interactable=o;
+        user_button3.interactable=o;
     }
 
     public void GetState(){
         StartCoroutine(GetRequest(state_adress));
-
     }
 
     public void SendStatus(){
@@ -307,7 +296,6 @@ public class GameManager : MonoBehaviour
             status="NOT_READY";
             GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Ready";
         }
-
         adress+=status;
         Debug.Log("Status");
         Debug.Log(adress);
@@ -315,115 +303,39 @@ public class GameManager : MonoBehaviour
 
     }
 
-
-    void HandleFirstJoin(JSONNode state){
-
-        Debug.Log(state);
-        Debug.Log(state["result"]); 
-        Debug.Log("Players");
+    void HandleState(JSONNode state){
         int i=0;
         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"])
-        {
-            
+        {           
             Debug.Log(entry.Key);       
             Debug.Log(entry.Value);
-            
-            GameObject _nickname = Instantiate(nickname, new Vector3(0,0,0), Quaternion.identity);
-            GameObject _chips = Instantiate(chips, new Vector3(0,0,0), Quaternion.identity);
-
-            if(entry.Key==user_id){
-                //Setup user variables
-                // _chips.transform.SetParent(user_chips[6].transform,false);
-                // _chips.GetComponent<Text>().text ="";                
-                // _chips.GetComponent<Text>().text = entry.Value["wallet"];
-                
-
-            }else if(i!=6){
-                _nickname.transform.SetParent(user_nickname[i].transform,false);
-                _chips.transform.SetParent(user_chips[i].transform,false);
-                _nickname.GetComponent<Text>().text = entry.Value["username"];
-                _chips.GetComponent<Text>().text = entry.Value["wallet"];             
-            }else{
-                _nickname.transform.SetParent(user_nickname[i+1].transform,false);
-                _chips.transform.SetParent(user_chips[i+1].transform,false);
-                _nickname.GetComponent<Text>().text = entry.Value["username"];
-                _chips.GetComponent<Text>().text = entry.Value["wallet"];
-            }
-            Debug.Log(entry.Value["username"]);
-            Debug.Log(i);
-            i+=1;                     
-        }
-
-        
-        i=0;   
-        foreach( KeyValuePair<string, JSONNode> entry in state["result"]["spectators"])
-        {
-            
-            Debug.Log("specator");
-            Debug.Log(entry.Key);       
-            Debug.Log(entry.Value);
-            i+=1;          
-                            
-        }
-
-        Debug.Log("Specators in game: " +i.ToString());
-        GameObject spectators = Instantiate(specators_amount, new Vector3(0,0,0), Quaternion.identity);
-        spectators.transform.SetParent(specators_panel.transform,false);
-        spectators.GetComponent<Text>().text ="";
-        string amount = i.ToString();
-        spectators.GetComponent<Text>().text = amount;
-
-    }
-
-    void HandleConsumingGame(JSONNode state){
-        int i=0;
-        foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"])
-        {
-            
-            Debug.Log(entry.Key);       
-            Debug.Log(entry.Value);
-            
-            //GameObject _nickname = Instantiate(nickname, new Vector3(0,0,0), Quaternion.identity);
-            //GameObject _chips = Instantiate(chips, new Vector3(0,0,0), Quaternion.identity);
-
-            // user_nickname[6].GetComponentInChildren<Text>().text = "";
-            // user_chips[6].GetComponentInChildren<Text>().text = user_chips_amount.ToString();
-
-            if(entry.Key==user_id){
-                //Setup user variables
+            if(entry.Key==user_id){                
                 user_chips[6].GetComponentInChildren<Text>().text=entry.Value["wallet"];               
                 
             }else if(i!=6){
-                // _nickname.transform.SetParent(user_nickname[i].transform,false);
-                // _chips.transform.SetParent(user_chips[i].transform,false);
-                // _nickname.GetComponent<Text>().text = entry.Value["username"];
+                user_nickname[i].GetComponentInChildren<Text>().text=entry.Value["username"];               
                 user_chips[i].GetComponentInChildren<Text>().text=entry.Value["wallet"]; 
-                //_chips.GetComponent<Text>().text = entry.Value["wallet"];
-
-
             }else{
-                // _nickname.transform.SetParent(user_nickname[i+1].transform,false);
-                // _chips.transform.SetParent(user_chips[i+1].transform,false);
-                // _nickname.GetComponent<Text>().text = entry.Value["username"];
-                // _chips.GetComponent<Text>().text = entry.Value["wallet"];
-                user_chips[i+1].GetComponentInChildren<Text>().text=entry.Value["wallet"]; 
+                user_nickname[i+1].GetComponentInChildren<Text>().text=entry.Value["username"];            
+                user_chips[i+1].GetComponentInChildren<Text>().text=entry.Value["wallet"];           
             }
             Debug.Log(entry.Value["username"]);
             Debug.Log(i);
             i+=1;                     
         }
+        i=0;   
+         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["spectators"])
+         {
+            
+             Debug.Log("specator");
+             Debug.Log(entry.Key);       
+             Debug.Log(entry.Value);
+             i+=1;                                    
+         }
 
-    }
-
-
-    void HandleState(JSONNode state){
-
-        if(first_join) HandleFirstJoin(state);
-        else HandleConsumingGame(state);
-
-        //string adress="http://localhost:3010/game/3f50a38b923f48ebad12f17e11e96373/state?token=2f76a09f0ce64fb2acd7b3159bb8a7d8";
-        //StartCoroutine(GetRequest(state_adress));
-         
+        Debug.Log("Specators in game: " +i.ToString());
+        specators_panel.GetComponentInChildren<Text>().text = i.ToString();
+            
     }
 
 
@@ -441,12 +353,9 @@ public class GameManager : MonoBehaviour
               
     }
 
-    public void GetUp(){
-
-    }
-
     public void LeaveTable(){
-
+        StartCoroutine(PostRequest(leave_adress,PostRequestType.LEAVE));
+        Debug.Log(leave_adress);
     }
 
    public void UpdateGameState(GameState newState){
