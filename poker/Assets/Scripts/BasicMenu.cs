@@ -13,7 +13,7 @@ public class BasicMenu : MonoBehaviour
         RegisterMenu.server_adress=server_adress;
         table.server_adress=server_adress;
         TableListMenu.server_adress=server_adress;
-        ListScene.server_adress=server_adress;
+        //ListScene.server_adress=server_adress;
         LoginMenu.server_adress=server_adress;
         
 
