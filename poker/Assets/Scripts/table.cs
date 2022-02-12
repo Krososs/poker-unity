@@ -14,13 +14,15 @@ public class table : MonoBehaviour
     
     private string user_token;
     private string table_id;
+
+    public static string server_adress;
     public void JoinTable(){
         GameObject  child= this.transform.GetChild (0).gameObject;
 
          table_id = child.GetComponent<Text>().text;
          user_token=MainMenu.token;
 
-        string adress="http://localhost:3010/game/"+table_id+"/join?token="+user_token;
+        string adress= server_adress+"/game/"+table_id+"/join?token="+user_token;
         StartCoroutine(GetRequest(adress));
       
     }

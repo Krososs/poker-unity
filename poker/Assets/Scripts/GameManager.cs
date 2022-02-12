@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
     public Button user_button3;
     public Button up_down_button;
 
-
+    public static string server_adress;
     public static string username;
     public static string user_token;
     public static string table_id;
@@ -48,11 +48,20 @@ public class GameManager : MonoBehaviour
 //PRIVATE
 
 //ADDRESSES
+
+
     private string state_adress;
     private string sit_adress;
     private string get_up_adress;
     private string status_adress;
     private string leave_adress;
+
+    //game
+    private string call_adress;
+    private string all_in_adress;
+    private string check_adress;
+    private string fold_adress;
+
 
 //IN_GAME_VARIABLES
     private string status="NOT_READY";
@@ -66,7 +75,12 @@ public class GameManager : MonoBehaviour
         SIT,
         GET_UP,
         STATUS,
-        LEAVE
+        LEAVE,
+        CALL,
+        ALL_IN,
+        CHECK,
+        FOLD,
+        RAISE
     }
 
     public GameState State;
@@ -80,11 +94,16 @@ public class GameManager : MonoBehaviour
 
     void Awake() {       
          Instance=this;
-         state_adress="http://localhost:3010/game/"+table_id+"/state?token="+user_token;
-         sit_adress="http://localhost:3010/game/"+table_id+"/sit_down?token="+user_token;
-         get_up_adress="http://localhost:3010/game/"+table_id+"/get_up?token="+user_token;
-         status_adress="http://localhost:3010/game/"+table_id+"/player_status?token="+user_token+"&status=";
-         leave_adress="http://localhost:3010/game/"+table_id+"/leave?token="+user_token;
+         server_adress+="/game/";
+         state_adress= server_adress+table_id+"/state?token="+user_token;
+         sit_adress= server_adress+table_id+"/sit_down?token="+user_token;
+         get_up_adress= server_adress+table_id+"/get_up?token="+user_token;
+         status_adress= server_adress+table_id+"/player_status?token="+user_token+"&status=";
+         leave_adress= server_adress+table_id+"/leave?token="+user_token;
+         call_adress= server_adress+table_id+"/call?token="+user_token;
+         all_in_adress= server_adress+table_id+"/all_in?token="+user_token;
+         check_adress= server_adress+table_id+"/check?token="+user_token;
+         fold_adress= server_adress+table_id+"/fold?token="+user_token;
 
         //vps.damol.pl:4000        
                 
@@ -209,6 +228,29 @@ public class GameManager : MonoBehaviour
         HandleState(node);       
     }
 
+
+    void ProcessCallRespone(string rawRespone){
+        JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
+        HandleState(node);       
+    }
+
+    void ProcessAllInRespone(string rawRespone){
+        JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
+        HandleState(node);       
+    }
+    void ProcessCheckRespone(string rawRespone){
+        JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
+        HandleState(node);       
+    }
+    void ProcessFoldRespone(string rawRespone){
+        JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
+        HandleState(node);       
+    }
+    void ProcessRaiseRespone(string rawRespone){
+        JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
+        HandleState(node);       
+    }
+
     IEnumerator GetRequest(string uri){
         UnityWebRequest www = UnityWebRequest.Get(uri);
         yield return www.SendWebRequest();
@@ -253,6 +295,21 @@ public class GameManager : MonoBehaviour
                     break;
                 case PostRequestType.LEAVE:
                     ProcessLeaveRespone(www.downloadHandler.text);
+                    break;
+                case PostRequestType.CALL:
+                    ProcessCallRespone(www.downloadHandler.text);
+                    break;
+                case PostRequestType.ALL_IN:
+                    ProcessAllInRespone(www.downloadHandler.text);
+                    break;
+                case PostRequestType.CHECK:
+                    ProcessCheckRespone(www.downloadHandler.text);
+                    break;
+                case PostRequestType.FOLD:
+                    ProcessFoldRespone(www.downloadHandler.text);
+                    break;
+                case PostRequestType.RAISE:
+                    ProcessRaiseRespone(www.downloadHandler.text);
                     break;
                 default:
                     Debug.LogError("Wrong request type!");

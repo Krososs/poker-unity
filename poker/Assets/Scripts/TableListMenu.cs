@@ -19,11 +19,13 @@ public class TableListMenu : MonoBehaviour
     public GameObject number_of_players;
     public GameObject game_state;
 
+    public static string server_adress;
+
     void Start(){
         Debug.Log("Szukam stołów");
         //token="db0bd26bac28473c9731cc88463ff97f";
         Debug.Log("Mój token to: "+token);
-        string adress="http://localhost:3010/game/list?token="+token;
+        string adress= server_adress+"/game/list?token="+token;
         StartCoroutine(GetRequest(adress)); 
 
     }

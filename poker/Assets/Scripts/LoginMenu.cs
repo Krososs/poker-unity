@@ -23,6 +23,7 @@ public class LoginMenu : MonoBehaviour
 
        
     public static string username;
+    public static string server_adress;
     private string password;
 
     public GameObject error;
@@ -39,7 +40,7 @@ public class LoginMenu : MonoBehaviour
 
         string n = JsonUtility.ToJson(myObject);
         //Debug.Log(n);
-        string adress="http://localhost:3010/login";
+        string adress= server_adress+"/login";
 
         StartCoroutine(GetRequest(adress,n)); 
     }

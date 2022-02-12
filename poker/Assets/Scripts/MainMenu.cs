@@ -11,6 +11,7 @@ using System.Linq;
 public class MainMenu : MonoBehaviour
 {
     public static string token;
+    public static string server_adress;
 
     void Start(){
         TableListMenu.token=token;
@@ -31,7 +32,7 @@ public class MainMenu : MonoBehaviour
     void Create_game(){
         GameManager.user_token=token;
         GameManager.player=true;
-        string adress="http://localhost:3010/game/create?token="+token;
+        string adress= server_adress+"/game/create?token="+token;
         StartCoroutine(PutRequest(adress));
     }
 
@@ -41,7 +42,7 @@ public class MainMenu : MonoBehaviour
     }
 
     public void Logout(){
-        string adress="http://localhost:3010/logout?token="+token;
+        string adress= server_adress+"/logout?token="+token;
         StartCoroutine(GetRequest(adress));
         SceneManager.LoadScene(0);
 

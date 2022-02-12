@@ -22,7 +22,7 @@ public class RegisterMenu : MonoBehaviour
          public string language="en";        
     }
     
-
+    public static string server_adress;
     private string username;
     private string email;
     private string password;
@@ -83,7 +83,8 @@ public class RegisterMenu : MonoBehaviour
             user.password=HashedPass;
             user.email=email;
 
-            string adress="http://localhost:3010/register";
+            string adress=server_adress+"/register";
+            Debug.Log(adress);
             string n = JsonUtility.ToJson(user);
             StartCoroutine(GetRequest(adress,n)); 
 
