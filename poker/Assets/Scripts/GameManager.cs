@@ -38,6 +38,11 @@ public class GameManager : MonoBehaviour
     public Button user_button3;
     public Button up_down_button;
 
+
+    public Image small_bet_image;
+    public Image medium_bet_image;
+    public Image big_bet_image;
+
     public static string server_adress="vps.damol.pl:4000";
     public static string username;
     public static string user_token;
@@ -103,10 +108,14 @@ public class GameManager : MonoBehaviour
         RAISE
     }
 
+
 //STATE_VARIABLES
-
-//private
-
+    public int cards_in_deck;
+    public int cards_on_board;
+    public int lot;
+    public int phase;
+    public int time_to_end;
+    public bool active_player_id;
 
     WebSocket websocket;
 
@@ -118,7 +127,7 @@ public class GameManager : MonoBehaviour
 
     void Awake() {       
          Instance=this;
-         server_adress+="/game/";
+         server_adress="vps.damol.pl:4000/game/";
          state_adress= server_adress+table_id+"/state?token="+user_token;
          sit_adress= server_adress+table_id+"/sit_down?token="+user_token;
          get_up_adress= server_adress+table_id+"/get_up?token="+user_token;
@@ -354,15 +363,36 @@ public class GameManager : MonoBehaviour
         for(int i=0; i<8; i++){
             GameObject _nickname = Instantiate(nickname, new Vector3(0,0,0), Quaternion.identity);
             GameObject _chips = Instantiate(chips, new Vector3(0,0,0), Quaternion.identity);
+
             _nickname.transform.SetParent(user_nickname[i].transform,false);
             _chips.transform.SetParent(user_chips[i].transform,false);
 
             user_panels[i].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
+
+            GameObject bet = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
+            GameObject amount = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
+
+            bet.transform.SetParent(user_bets[i].transform,false);
+            amount.transform.SetParent(user_bets[i].transform,false);
            
 
         }
         GameObject spectators = Instantiate(specators_amount, new Vector3(0,0,0), Quaternion.identity);
         spectators.transform.SetParent(specators_panel.transform,false);
+
+
+
+
+         //for (int i =0; i<user_bets.Length; i++){
+    //         GameObject bet = Instantiate(big_bet, new Vector3(0,0,0), Quaternion.identity);
+    //         GameObject amount = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
+
+    //         bet.transform.SetParent(user_bets[i].transform,false);
+    //         amount.transform.SetParent(user_bets[i].transform,false);
+    //         amount.GetComponent<Text>().bet_amount = "14567";
+    //         //Debug.Log("Dodaje");
+    //     }
+
 
     }
 
@@ -410,6 +440,26 @@ public class GameManager : MonoBehaviour
         Debug.Log("GAME STATE");
         Debug.Log(state);
         Debug.Log("----------------------------------------------------- ");
+
+        // private int cards_in_deck;
+        // private int cards_on_board;
+        // private int lot;
+        // private int phase;
+        // private int time_to_end;
+        // private bool active_player_id;
+
+
+        cards_in_deck=state["number_of_cards_in_deck"];
+        cards_on_board=state["number_of_cards_on_boad"];
+        lot=state["lot"];
+
+        // foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"])
+        // {
+
+        // }
+
+        
+
         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"])
         {           
             Debug.Log(entry.Key);       
@@ -420,6 +470,10 @@ public class GameManager : MonoBehaviour
             }else if(i!=6){
                 user_nickname[i].GetComponentInChildren<Text>().text=entry.Value["username"];               
                 user_chips[i].GetComponentInChildren<Text>().text=entry.Value["wallet"]; 
+
+                // if(entry.Value["hand_exposed"]==true){
+
+                // }
             }else{
                 user_nickname[i+1].GetComponentInChildren<Text>().text=entry.Value["username"];            
                 user_chips[i+1].GetComponentInChildren<Text>().text=entry.Value["wallet"];           
@@ -510,7 +564,7 @@ public class GameManager : MonoBehaviour
 
     //         bet.transform.SetParent(user_bets[i].transform,false);
     //         amount.transform.SetParent(user_bets[i].transform,false);
-    //         amount.GetComponent<Text>().bet_amount = "14567";
+    //         amount.GetComponent<Text>().text= "14567";
     //         //Debug.Log("Dodaje");
     //     }
 
