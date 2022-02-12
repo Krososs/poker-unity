@@ -22,7 +22,7 @@ public class RegisterMenu : MonoBehaviour
          public string language="en";        
     }
     
-    public static string server_adress;
+    public static string server_adress="vps.damol.pl:4000";
     private string username;
     private string email;
     private string password;

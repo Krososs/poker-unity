@@ -11,7 +11,7 @@ using System.Linq;
 public class MainMenu : MonoBehaviour
 {
     public static string token;
-    public static string server_adress;
+    public static string server_adress="vps.damol.pl:4000";
 
     void Start(){
         TableListMenu.token=token;

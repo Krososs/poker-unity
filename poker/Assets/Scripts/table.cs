@@ -15,7 +15,7 @@ public class table : MonoBehaviour
     private string user_token;
     private string table_id;
 
-    public static string server_adress;
+    public static string server_adress="vps.damol.pl:4000";
     public void JoinTable(){
         GameObject  child= this.transform.GetChild (0).gameObject;
 

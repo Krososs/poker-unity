@@ -19,7 +19,7 @@ public class TableListMenu : MonoBehaviour
     public GameObject number_of_players;
     public GameObject game_state;
 
-    public static string server_adress;
+    public static string server_adress="vps.damol.pl:4000";
 
     void Start(){
         Debug.Log("Szukam stołów");

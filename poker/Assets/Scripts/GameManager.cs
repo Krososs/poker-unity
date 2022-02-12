@@ -38,13 +38,32 @@ public class GameManager : MonoBehaviour
     public Button user_button3;
     public Button up_down_button;
 
-    public static string server_adress;
+    public static string server_adress="vps.damol.pl:4000";
     public static string username;
     public static string user_token;
     public static string table_id;
     public static string user_id;
 
-    public static bool player; 
+    public static bool player;
+
+
+    // public class uState{
+    //     private GameManager parent;
+
+    //     private int cards_in_deck;
+    //     private int cards_on_boad;
+
+    //     // public fuState()
+    //     // {
+    //     //     //this.parent = parent;
+    //     // }
+
+    //     void SetCardsInDeck(int cards){
+    //         cards_in_deck=cards;
+    //     }
+
+    // }
+
 //PRIVATE
 
 //ADDRESSES
@@ -70,6 +89,7 @@ public class GameManager : MonoBehaviour
     
 
     public static GameManager Instance;
+    public GameState State;
 
     enum PostRequestType{
         SIT,
@@ -83,7 +103,11 @@ public class GameManager : MonoBehaviour
         RAISE
     }
 
-    public GameState State;
+//STATE_VARIABLES
+
+//private
+
+
     WebSocket websocket;
 
     public static event Action<GameState> OnGameStateChanged;
@@ -381,7 +405,8 @@ public class GameManager : MonoBehaviour
 
     void HandleState(JSONNode state){
         int i=0;
-
+        Debug.Log("STATE ADDRESS");
+        Debug.Log(state_adress);
         Debug.Log("GAME STATE");
         Debug.Log(state);
         Debug.Log("----------------------------------------------------- ");

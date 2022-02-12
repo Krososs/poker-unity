@@ -23,7 +23,7 @@ public class LoginMenu : MonoBehaviour
 
        
     public static string username;
-    public static string server_adress;
+    public static string server_adress="vps.damol.pl:4000";
     private string password;
 
     public GameObject error;
