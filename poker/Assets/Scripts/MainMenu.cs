@@ -29,6 +29,8 @@ public class MainMenu : MonoBehaviour
     }
 
     void Create_game(){
+        GameManager.user_token=token;
+        GameManager.player=true;
         string adress="http://localhost:3010/game/create?token="+token;
         StartCoroutine(PutRequest(adress));
     }
@@ -47,7 +49,10 @@ public class MainMenu : MonoBehaviour
 
     void ProcessServerRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
-        Debug.Log(node);   
+        GameManager.table_id=node["result"];
+        Debug.Log("Tworzę stół");
+        Debug.Log(node["result"]);
+        SceneManager.LoadScene(6);   
     }
 
     void ProcessLogout(string rawRespone){

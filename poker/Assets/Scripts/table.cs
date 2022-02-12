@@ -30,8 +30,9 @@ public class table : MonoBehaviour
         if(node["valid"]){
             Debug.Log("Użytkownik: "+user_token);
             Debug.Log("Dołącza do stołu: " +table_id);
-            GameManager.username_token=user_token;
+            GameManager.user_token=user_token;
             GameManager.table_id=table_id;
+            GameManager.player=false;
             SceneManager.LoadScene(6);
 
         }else{
