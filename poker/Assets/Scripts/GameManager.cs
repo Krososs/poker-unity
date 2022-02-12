@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     public GameObject[] user_bets; //user bet place
     public GameObject[] user_nickname; //user nickname
     public GameObject[] user_chips; // user amount of chips
+    public GameObject[] user_panels; //players panels
     public GameObject panel; //user panel
 
     public GameObject small_bet; //small bet texture
@@ -78,12 +79,14 @@ public class GameManager : MonoBehaviour
 //UNITY
 
     void Awake() {       
-        Instance=this;
-        state_adress="http://localhost:3010/game/"+table_id+"/state?token="+user_token;
-        sit_adress="http://localhost:3010/game/"+table_id+"/sit_down?token="+user_token;
-        get_up_adress="http://localhost:3010/game/"+table_id+"/get_up?token="+user_token;
-        status_adress="http://localhost:3010/game/"+table_id+"/player_status?token="+user_token+"&status=";
-        leave_adress="http://localhost:3010/game/"+table_id+"/leave?token="+user_token;        
+         Instance=this;
+         state_adress="http://localhost:3010/game/"+table_id+"/state?token="+user_token;
+         sit_adress="http://localhost:3010/game/"+table_id+"/sit_down?token="+user_token;
+         get_up_adress="http://localhost:3010/game/"+table_id+"/get_up?token="+user_token;
+         status_adress="http://localhost:3010/game/"+table_id+"/player_status?token="+user_token+"&status=";
+         leave_adress="http://localhost:3010/game/"+table_id+"/leave?token="+user_token;
+
+        //vps.damol.pl:4000        
                 
     }
 
@@ -166,6 +169,7 @@ public class GameManager : MonoBehaviour
             //player=true;                
             user_chips[6].GetComponentInChildren<Text>().text="0";
             user_nickname[6].GetComponentInChildren<Text>().text=username;
+            user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.0f);
             GameObject.Find("Up/DownButton").GetComponentInChildren<Text>().text = "Get up";
 
         }
@@ -178,6 +182,7 @@ public class GameManager : MonoBehaviour
             ManageButtons(false);
             //player=false;
             GameObject.Find("Up/DownButton").GetComponentInChildren<Text>().text = "Sit";
+            user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
             user_nickname[6].GetComponentInChildren<Text>().text = "";
             user_chips[6].GetComponentInChildren<Text>().text = "";
         }
@@ -270,16 +275,28 @@ public class GameManager : MonoBehaviour
             GameObject _chips = Instantiate(chips, new Vector3(0,0,0), Quaternion.identity);
             _nickname.transform.SetParent(user_nickname[i].transform,false);
             _chips.transform.SetParent(user_chips[i].transform,false);
+
+            user_panels[i].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
+           
+
         }
         GameObject spectators = Instantiate(specators_amount, new Vector3(0,0,0), Quaternion.identity);
         spectators.transform.SetParent(specators_panel.transform,false);
+
     }
+
+
+ 
+
+
+   
 
     void ManageButtons(bool o){
         status_button.interactable=o;
         user_button1.interactable=o;
         user_button2.interactable=o;
         user_button3.interactable=o;
+        //user_chips[2].interactable=o;
     }
 
     public void GetState(){
@@ -291,10 +308,12 @@ public class GameManager : MonoBehaviour
         if(status=="NOT_READY"){
             status="READY";
             GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Not ready";
+            user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.00f);
         }
         else{ 
             status="NOT_READY";
             GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Ready";
+            user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
         }
         adress+=status;
         Debug.Log("Status");
@@ -305,6 +324,10 @@ public class GameManager : MonoBehaviour
 
     void HandleState(JSONNode state){
         int i=0;
+
+        Debug.Log("GAME STATE");
+        Debug.Log(state);
+        Debug.Log("----------------------------------------------------- ");
         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"])
         {           
             Debug.Log(entry.Key);       
@@ -375,6 +398,25 @@ public class GameManager : MonoBehaviour
         }
 
         OnGameStateChanged?.Invoke(newState);
+   }
+
+
+   public void Call(){
+
+   }
+
+   public void Check(){
+
+   }
+   public void Fold (){
+
+   }
+   public void AllIn(){
+
+   }
+
+   public void Raise(){
+
    }
 
     // //funkcja testowa 
