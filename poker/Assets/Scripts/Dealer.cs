@@ -33,8 +33,6 @@ public class Dealer : MonoBehaviour
             GameObject playerCard = Instantiate(card2, new Vector3(0,0,0), Quaternion.identity);
             playerCard.transform.SetParent(table.transform,false);
         }
-        Debug.Log("Ajem drawing");
-
     }
 
     public void initiate_user_panel(GameObject card, GameObject card2){

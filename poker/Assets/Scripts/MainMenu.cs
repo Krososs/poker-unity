@@ -50,9 +50,27 @@ public class MainMenu : MonoBehaviour
 
     void ProcessServerRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
-        GameManager.table_id=node["result"];
-        Debug.Log("Tworzę stół");
-        Debug.Log(node["result"]);
+        Debug.Log(node);
+        string table_id="";
+        int port=0;
+
+        
+        foreach(KeyValuePair<string, JSONNode> entry in node["result"]){
+
+            if(entry.Key=="tableId"){
+                table_id=entry.Value;
+            }else{
+                port=entry.Value;
+            }
+        }
+        Debug.Log(table_id);
+        Debug.Log(port);
+        
+        GameManager.table_id=table_id;
+        GameManager.port=port.ToString();
+
+        // Debug.Log("Tworzę stół");
+        // Debug.Log(node["result"]);
         SceneManager.LoadScene(6);   
     }
 

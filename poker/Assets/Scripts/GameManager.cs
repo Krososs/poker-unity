@@ -17,14 +17,18 @@ public class GameManager : MonoBehaviour
     public GameObject[] user_bets; //user bet place
     public GameObject[] user_nickname; //user nickname
     public GameObject[] user_chips; // user amount of chips
-    public GameObject[] user_panels={}; //players panels
+    public GameObject[] user_panels; //players panels
 
-    public GameObject [] heart_images;
-    public GameObject [] diamond_images;
-    public GameObject [] club_images;
-    public GameObject [] spade_images;
+    // public GameObject [] heart_images;
+    // public GameObject [] diamond_images;
+    // public GameObject [] club_images;
+    // public GameObject [] spade_images;
 
-    public GameObject panel; //user panel
+    public GameObject [] cards;
+
+    public GameObject table;
+
+    //public GameObject panel; //user panel
 
     public GameObject small_bet; //small bet texture
     public GameObject medium_bet; //medium bet texture
@@ -53,9 +57,8 @@ public class GameManager : MonoBehaviour
     public Button user_button3;
     public Button up_down_button;
 
-    //var keys = new Dictionary<int, int>();
-
-
+    Dictionary<int, int> keys = new Dictionary<int, int>();
+    
     // public Image small_bet_image;
     // public Image medium_bet_image;
     // public Image big_bet_image;
@@ -66,6 +69,7 @@ public class GameManager : MonoBehaviour
     public static string user_token;
     public static string table_id;
     public static string user_id;
+    public static string port;
 
     private int current_bet=120;
     private int big_blind;
@@ -101,6 +105,7 @@ public class GameManager : MonoBehaviour
     private string get_up_adress;
     private string status_adress;
     private string leave_adress;
+    
 
     //game
     private string call_adress;
@@ -159,9 +164,7 @@ public class GameManager : MonoBehaviour
          all_in_adress= server_adress+table_id+"/all_in?token="+user_token;
          check_adress= server_adress+table_id+"/check?token="+user_token;
          fold_adress= server_adress+table_id+"/fold?token="+user_token;
-
-        //vps.damol.pl:4000        
-                
+               
     }
 
      void Start(){
@@ -174,6 +177,9 @@ public class GameManager : MonoBehaviour
         Debug.Log(user_id);
         Debug.Log("Przy stole");
         Debug.Log(table_id);
+        Debug.Log("Port stołu");
+        Debug.Log(port);
+        phase=-1;
 
         if(!player){
             ManageButtons(false);         
@@ -206,11 +212,12 @@ public class GameManager : MonoBehaviour
 // WEB
 
     async void SetupWebSocket(){
-         websocket = new WebSocket("ws://localhost:3010");
-
+         websocket = new WebSocket("ws://vps.damol.pl:"+port);
+         
         websocket.OnOpen += () =>
         {
             Debug.Log("Connection open!");
+            Debug.Log("On port");
         };
 
         websocket.OnError += (e) =>
@@ -225,10 +232,7 @@ public class GameManager : MonoBehaviour
 
         websocket.OnMessage += (bytes) =>
         {
-            //GetState
-            //StartCoroutine(GetRequest(state_adress));
             GetState();
-
             Debug.Log("OnMessage!");           
             //getting the message as a string
             var message = System.Text.Encoding.UTF8.GetString(bytes);
@@ -441,64 +445,95 @@ public class GameManager : MonoBehaviour
     }
 
     void HandleState(JSONNode state){
-        int i=0;
+
+        int i=0; //indeks paneli
+        int j=0; //indeks kolejności graczy
+        int [] colour = new int[2];
+        int [] value = new int[2];
+        int k =0;
         Debug.Log("STATE ADDRESS");
         Debug.Log(state_adress);
         Debug.Log("GAME STATE");
         Debug.Log(state);
         Debug.Log("----------------------------------------------------- ");
 
-        // private int cards_in_deck;
-        // private int cards_on_board;
-        // private int lot;
-        // private int phase;
-        // private int time_to_end;
-        // private bool active_player_id;
-
-
         cards_in_deck=state["number_of_cards_in_deck"];
-        cards_on_board=state["number_of_cards_on_boad"];
+        cards_on_board=state["number_of_cards_on_board"];
         lot=state["lot"];
-      
-        // Debug.Log(state["result"]["game_state"]["current_phase"]);
-        // Debug.Log(state["result"]["game_state"]["time_to_end"]);
-        // Debug.Log(state["result"]["game_state"]["active_player_id"]);
-
-       
-
-        // foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"]){
-
-        //     if(state["result"]["game_state"]["current_phase"]==1){
-
-        //     }
         
-            
-        // }
+        Array.Clear(colour,0,colour.Length);
+        Array.Clear(value,0,value.Length);
+
+        if(phase!=state["result"]["game_state"]["current_phase"]){
+
+            DestroyTable();
+            phase=state["result"]["game_state"]["current_phase"];
+            Debug.Log("BOARD");
+            Debug.Log(state["result"]["board"]);
+            //ShowTable();
+        } 
 
         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"])
         {   
-            if(state["result"]["game_state"]["current_phase"]==1 && entry.Key==state["result"]["game_state"]["small_blind_player_id"].ToString())
-            {
-                BlindBet(i,state["result"]["small_blind_value"]);
 
-                BlindBet(i+1,2*state["result"]["small_blind_value"]);
-                DealCards();
-            }
-            if(entry.Key==user_id){                
-                user_chips[6].GetComponentInChildren<Text>().text=entry.Value["wallet"];               
+            
+            if(state["result"]["game_state"]["current_phase"]==1)
+            {
+                if(entry.Key==state["result"]["game_state"]["small_blind_player_id"].ToString()){
+                    BlindBet(j,state["result"]["small_blind_value"],state["result"]["big_blind_value"]);
+                }
+
+                Debug.Log(entry.Key);
+                Debug.Log(user_id);
+               
+                if(entry.Key==user_id){
+                    Debug.Log("MOJE REKA W FAZIE  1");
+                    Debug.Log(entry.Value["hand"]);
+                    foreach(KeyValuePair<string, JSONNode> card in entry.Value["hand"]){
+
+                        colour[k]=card.Value["colour"];
+                        value[k]=card.Value["value"];
+                        Debug.Log("Kolor");
+                        Debug.Log(card.Value["colour"]);
+                        Debug.Log("Value");
+                        Debug.Log(card.Value["value"]);
+                        k+=1;
+                    }
+                    DealCards(colour,value);
+                }
                 
+            }
+                     
+            if(entry.Key==user_id){
+                keys[j]=6;                
+                user_chips[6].GetComponentInChildren<Text>().text=entry.Value["wallet"]; //portfel
+                                                         
             }else if(i!=6){
+                keys[j]=i; 
                 user_nickname[i].GetComponentInChildren<Text>().text=entry.Value["username"];               
                 user_chips[i].GetComponentInChildren<Text>().text=entry.Value["wallet"]; 
 
-            }else{               
+            }else{
+                keys[j]=i+1;                
                 user_nickname[i+1].GetComponentInChildren<Text>().text=entry.Value["username"];            
                 user_chips[i+1].GetComponentInChildren<Text>().text=entry.Value["wallet"];                          
             }
-            Debug.Log(entry.Value["username"]);
-            Debug.Log(i);
+
+            if(entry.Value["current_bet"]>0 && entry.Key==state["result"]["game_state"]["active_player_id"]){          
+                Bet(j,entry.Value["current_bet"]);
+            }
+            //Debug.Log(entry.Value["username"]);
+            //Debug.Log(i);
+            j+=1;
             i+=1;                     
         }
+
+        // Debug.Log("Tablica");
+        // foreach(KeyValuePair<int,int> key in keys){
+        //     Debug.Log(key.Key +" "+key.Value);
+
+        // }
+        
         i=0;   
          foreach( KeyValuePair<string, JSONNode> entry in state["result"]["spectators"])
          {
@@ -566,12 +601,43 @@ public class GameManager : MonoBehaviour
 
    }
 
-   void BlindBet(int i,int value){     
+   void BlindBet(int i,int value, int value2){
+
         GameObject bet = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
         GameObject amount = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
-        bet.transform.SetParent(user_bets[i].transform,false);
-        amount.transform.SetParent(user_bets[i].transform,false);
+        bet.transform.SetParent(user_bets[keys[i]].transform,false);
+        amount.transform.SetParent(user_bets[keys[i]].transform,false);
         amount.GetComponent<Text>().text= value.ToString();
+
+        GameObject bet2 = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
+        GameObject amount2 = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
+
+        if((i+1)==8){
+            bet2.transform.SetParent(user_bets[0].transform,false);
+            amount2.transform.SetParent(user_bets[0].transform,false);
+            amount2.GetComponent<Text>().text= value2.ToString();
+
+        }else{  
+            bet2.transform.SetParent(user_bets[keys[i+1]].transform,false);
+            amount2.transform.SetParent(user_bets[keys[i+1]].transform,false);
+            amount2.GetComponent<Text>().text= value2.ToString();
+        }
+   }
+
+   void Bet(int i, int value){
+        GameObject bet = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
+        GameObject amount = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
+
+        if(user_bets[keys[i]].transform.childCount==0){//pierwszy bet danego gracza
+           bet.transform.SetParent(user_bets[keys[i]].transform,false);
+           amount.transform.SetParent(user_bets[keys[i]].transform,false);
+           amount.GetComponent<Text>().text= value.ToString();
+
+        }else{
+            string current_bet =user_bets[keys[i]].GetComponentInChildren<Text>().text;
+            value+= Int16.Parse(current_bet);
+            user_bets[keys[i]].GetComponentInChildren<Text>().text=value.ToString();
+        }         
    }
    
    void HandleRaise(int i, int value){     
@@ -591,8 +657,8 @@ public class GameManager : MonoBehaviour
         bet.transform.SetParent(user_bets[i].transform,false);
         amount.transform.SetParent(user_bets[i].transform,false);
         amount.GetComponent<Text>().text= value.ToString();
-
    }
+
    public void Fold (){
 
    }
@@ -611,16 +677,33 @@ public class GameManager : MonoBehaviour
    }
 
 
-   void DealCards(){
-        GameObject playerCard = Instantiate(heart_images[4], new Vector3(0,0,0), Quaternion.identity);
-        GameObject playerCard2 = Instantiate(heart_images[5], new Vector3(0,0,0), Quaternion.identity);
+   void DealCards(int [] colour, int [] value){
+        int x= (colour[0]-1) * 13 + (value[0]-2);
+        int y= (colour[1]-1) * 13 + (value[1]-2);
+        Debug.Log(x);
+        Debug.Log(y);
+        GameObject playerCard = Instantiate(cards[x], new Vector3(0,0,0), Quaternion.identity);
+        GameObject playerCard2 = Instantiate(cards[y], new Vector3(0,0,0), Quaternion.identity);
         playerCard.transform.SetParent(user_panels[6].transform,false);
-        playerCard2.transform.SetParent(user_panels[6].transform,false);
-        // GameObject playerCard2 = Instantiate(card2, new Vector3(0,0,0), Quaternion.identity);
-        // playerCard2.transform.SetParent(this.transform,false);
-   }
+        playerCard2.transform.SetParent(user_panels[6].transform,false);      
+    }
 
-  
+    void DestroyTable(){
+         for(int i=table.transform.childCount-1; i>=0; i--){
+            DestroyImmediate(table.transform.GetChild(i).gameObject);
+        }
+    }
+
+
+    void ShowTable(int i,int [] colour, int [] value){
+        int x;
+        for(int j=0; j<i; j++){
+            x=(colour[j]-1) * 13 + (value[j]-2);
+            GameObject card = Instantiate(cards[x], new Vector3(0,0,0), Quaternion.identity);
+            card.transform.SetParent(table.transform,false);
+        }
+
+    }
 
     // //funkcja testowa 
     // void all_bet(){

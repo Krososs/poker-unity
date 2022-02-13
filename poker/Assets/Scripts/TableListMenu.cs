@@ -18,6 +18,7 @@ public class TableListMenu : MonoBehaviour
     public GameObject table_id;
     public GameObject number_of_players;
     public GameObject game_state;
+    public GameObject port_number;
 
     public static string server_adress="vps.damol.pl:4000";
 
@@ -57,6 +58,7 @@ public class TableListMenu : MonoBehaviour
         {
             GameObject id = Instantiate(table_id, new Vector3(0,0,0), Quaternion.identity);
             GameObject players = Instantiate(number_of_players, new Vector3(0,0,0), Quaternion.identity);
+            GameObject port= Instantiate(port_number, new Vector3(0,0,0), Quaternion.identity);
             GameObject state = Instantiate(game_state, new Vector3(0,0,0), Quaternion.identity);
             GameObject panel = Instantiate(Table_panel, new Vector3(0,0,0), Quaternion.identity);
 
@@ -65,6 +67,9 @@ public class TableListMenu : MonoBehaviour
 
             players.transform.SetParent(panel.transform,false);
             players.GetComponent<Text>().text = "Playes: "+entry.Value["number_of_players"];
+
+            port.transform.SetParent(panel.transform,false);
+            port.GetComponent<Text>().text = entry.Value["socket_port"];
 
             panel.transform.SetParent(scrollciew.transform,false);          
             Debug.Log(entry.Value);

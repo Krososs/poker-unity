@@ -14,13 +14,19 @@ public class table : MonoBehaviour
     
     private string user_token;
     private string table_id;
+    public static string table_port;
 
     public static string server_adress="vps.damol.pl:4000";
+
     public void JoinTable(){
         GameObject  child= this.transform.GetChild (0).gameObject;
+        GameObject  port= this.transform.GetChild (2).gameObject;
 
-         table_id = child.GetComponent<Text>().text;
-         user_token=MainMenu.token;
+        table_port = port.GetComponent<Text>().text;
+        table_id = child.GetComponent<Text>().text;
+
+        user_token=MainMenu.token;
+         
 
         string adress= server_adress+"/game/"+table_id+"/join?token="+user_token;
         StartCoroutine(GetRequest(adress));
@@ -29,12 +35,15 @@ public class table : MonoBehaviour
 
     void ProcessServerRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
+
+        Debug.Log(node);
         if(node["valid"]){
             Debug.Log("Użytkownik: "+user_token);
             Debug.Log("Dołącza do stołu: " +table_id);
             GameManager.user_token=user_token;
             GameManager.table_id=table_id;
             GameManager.player=false;
+            GameManager.port=table_port;
             SceneManager.LoadScene(6);
 
         }else{
