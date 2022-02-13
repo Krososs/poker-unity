@@ -17,7 +17,13 @@ public class GameManager : MonoBehaviour
     public GameObject[] user_bets; //user bet place
     public GameObject[] user_nickname; //user nickname
     public GameObject[] user_chips; // user amount of chips
-    public GameObject[] user_panels; //players panels
+    public GameObject[] user_panels={}; //players panels
+
+    public GameObject [] heart_images;
+    public GameObject [] diamond_images;
+    public GameObject [] club_images;
+    public GameObject [] spade_images;
+
     public GameObject panel; //user panel
 
     public GameObject small_bet; //small bet texture
@@ -46,6 +52,8 @@ public class GameManager : MonoBehaviour
     public Button user_button2;
     public Button user_button3;
     public Button up_down_button;
+
+    var keys = new Dictionary<int, int>();
 
 
     // public Image small_bet_image;
@@ -175,6 +183,11 @@ public class GameManager : MonoBehaviour
             user_nickname[6].GetComponentInChildren<Text>().text=username;
             user_chips[6].GetComponentInChildren<Text>().text="0";
             
+        }
+
+        for(int i=0; i<8; i++){
+            keys[i]=0;
+
         }
         GetState();
         //all_bet();
@@ -399,10 +412,9 @@ public class GameManager : MonoBehaviour
 
     void ManageButtons(bool o){
         status_button.interactable=o;
-        //user_button1.interactable=o;
+        user_button1.interactable=o;
         user_button2.interactable=o;
         user_button3.interactable=o;
-        //user_chips[2].interactable=o;
     }
 
     public void GetState(){
@@ -448,22 +460,30 @@ public class GameManager : MonoBehaviour
         cards_on_board=state["number_of_cards_on_boad"];
         lot=state["lot"];
       
-        Debug.Log(state["result"]["game_state"]["current_phase"]);
-        Debug.Log(state["result"]["game_state"]["time_to_end"]);
-        Debug.Log(state["result"]["game_state"]["active_player_id"]);
+        // Debug.Log(state["result"]["game_state"]["current_phase"]);
+        // Debug.Log(state["result"]["game_state"]["time_to_end"]);
+        // Debug.Log(state["result"]["game_state"]["active_player_id"]);
 
+       
+
+        // foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"]){
+
+        //     if(state["result"]["game_state"]["current_phase"]==1){
+
+        //     }
         
+            
+        // }
 
         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"])
         {   
             if(state["result"]["game_state"]["current_phase"]==1 && entry.Key==state["result"]["game_state"]["small_blind_player_id"].ToString())
             {
                 BlindBet(i,state["result"]["small_blind_value"]);
-                BlindBet(i+1,2*state["result"]["small_blind_value"]);
-            }
 
-            Debug.Log(entry.Key);       
-            Debug.Log(entry.Value);
+                BlindBet(i+1,2*state["result"]["small_blind_value"]);
+                DealCards();
+            }
             if(entry.Key==user_id){                
                 user_chips[6].GetComponentInChildren<Text>().text=entry.Value["wallet"];               
                 
@@ -546,7 +566,7 @@ public class GameManager : MonoBehaviour
 
    }
 
-   void BlindBet(int i,int value){
+   void BlindBet(int i,int value){     
         GameObject bet = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
         GameObject amount = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
         bet.transform.SetParent(user_bets[i].transform,false);
@@ -584,11 +604,18 @@ public class GameManager : MonoBehaviour
 
    }
 
+   public void DestroyMyCards(){ 
+        for(int i=user_panels[6].transform.childCount-1; i>=0; i--){
+            DestroyImmediate(user_panels[6].transform.GetChild(i).gameObject);
+        }
+   }
+
 
    void DealCards(){
-
-        // GameObject playerCard = Instantiate(card, new Vector3(0,0,0), Quaternion.identity);
-        // playerCard.transform.SetParent(this.transform,false);
+        GameObject playerCard = Instantiate(heart_images[4], new Vector3(0,0,0), Quaternion.identity);
+        GameObject playerCard2 = Instantiate(heart_images[5], new Vector3(0,0,0), Quaternion.identity);
+        playerCard.transform.SetParent(user_panels[6].transform,false);
+        playerCard2.transform.SetParent(user_panels[6].transform,false);
         // GameObject playerCard2 = Instantiate(card2, new Vector3(0,0,0), Quaternion.identity);
         // playerCard2.transform.SetParent(this.transform,false);
    }
