@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviour
     public Button user_button3;
     public Button up_down_button;
 
-    var keys = new Dictionary<int, int>();
+    //var keys = new Dictionary<int, int>();
 
 
     // public Image small_bet_image;
@@ -185,10 +185,10 @@ public class GameManager : MonoBehaviour
             
         }
 
-        for(int i=0; i<8; i++){
-            keys[i]=0;
+        // for(int i=0; i<8; i++){
+        //     keys[i]=0;
 
-        }
+        // }
         GetState();
         //all_bet();
     }
