@@ -18,16 +18,8 @@ public class GameManager : MonoBehaviour
     public GameObject[] user_nickname; //user nickname
     public GameObject[] user_chips; // user amount of chips
     public GameObject[] user_panels; //players panels
-
-    // public GameObject [] heart_images;
-    // public GameObject [] diamond_images;
-    // public GameObject [] club_images;
-    // public GameObject [] spade_images;
-
     public GameObject [] cards;
-
     public GameObject table;
-
     //public GameObject panel; //user panel
 
     public GameObject small_bet; //small bet texture
@@ -410,8 +402,6 @@ public class GameManager : MonoBehaviour
         GameObject text = Instantiate(phase_text, new Vector3(0,0,0), Quaternion.identity);
         text.transform.SetParent(phase_panel.transform,false);
 
-        phase_panel.GetComponentInChildren<Text>().text = "3";
-
     }
 
     void ManageButtons(bool o){
@@ -469,7 +459,7 @@ public class GameManager : MonoBehaviour
             DestroyTable();
             phase=state["result"]["game_state"]["current_phase"];
             Debug.Log("BOARD");
-            Debug.Log(state["result"]["board"]);
+            Debug.Log(state["result"]["board"]);            
             //ShowTable();
         } 
 
@@ -479,14 +469,14 @@ public class GameManager : MonoBehaviour
             
             if(state["result"]["game_state"]["current_phase"]==1)
             {
-                if(entry.Key==state["result"]["game_state"]["small_blind_player_id"].ToString()){
-                    BlindBet(j,state["result"]["small_blind_value"],state["result"]["big_blind_value"]);
+                if(entry.Key==state["result"]["game_state"]["small_blind_player_id"].ToString() && user_bets[keys[j]].transform.childCount==0){
+                    BlindBet(j,state["result"]["small_blind_value"],state["result"]["big_blind_value"]);                   
                 }
 
                 Debug.Log(entry.Key);
                 Debug.Log(user_id);
                
-                if(entry.Key==user_id){
+                if(entry.Key==user_id &&user_panels[6].transform.childCount==0){
                     Debug.Log("MOJE REKA W FAZIE  1");
                     Debug.Log(entry.Value["hand"]);
                     foreach(KeyValuePair<string, JSONNode> card in entry.Value["hand"]){
@@ -527,13 +517,7 @@ public class GameManager : MonoBehaviour
             j+=1;
             i+=1;                     
         }
-
-        // Debug.Log("Tablica");
-        // foreach(KeyValuePair<int,int> key in keys){
-        //     Debug.Log(key.Key +" "+key.Value);
-
-        // }
-        
+     
         i=0;   
          foreach( KeyValuePair<string, JSONNode> entry in state["result"]["spectators"])
          {
@@ -605,13 +589,13 @@ public class GameManager : MonoBehaviour
 
         GameObject bet = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
         GameObject amount = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
-        bet.transform.SetParent(user_bets[keys[i]].transform,false);
-        amount.transform.SetParent(user_bets[keys[i]].transform,false);
-        amount.GetComponent<Text>().text= value.ToString();
-
         GameObject bet2 = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
         GameObject amount2 = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
 
+        bet.transform.SetParent(user_bets[keys[i]].transform,false);
+        amount.transform.SetParent(user_bets[keys[i]].transform,false);
+        amount.GetComponent<Text>().text= value.ToString();
+  
         if((i+1)==8){
             bet2.transform.SetParent(user_bets[0].transform,false);
             amount2.transform.SetParent(user_bets[0].transform,false);
