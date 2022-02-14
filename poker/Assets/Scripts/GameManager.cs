@@ -566,17 +566,6 @@ public class GameManager : MonoBehaviour
         OnGameStateChanged?.Invoke(newState);
    }
 
-
-   public void Call(){
-
-   }
-
-   public void Raise(){
-
-       if(current_bet>1000)HandleRaise(6,current_bet);
-
-   }
-
    void BlindBet(int i,int value, int value2){
 
         GameObject bet = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
@@ -635,22 +624,31 @@ public class GameManager : MonoBehaviour
         amount.GetComponent<Text>().text= value.ToString();
    }
 
-   public void Fold (){
+   public void Fold (){ //pasuj
 
    }
-   public void AllIn(){
+   public void Check(){ // czekaj
+   }
+
+   public void Call(){  //sprawdź
+       
+   }
+
+   public void Raise(){ //podbij
+       if(current_bet>1000)HandleRaise(6,current_bet);
+   }
+
+   public void AllIn(){ //napierdalaj na ostro
 
    }
 
-   public void Check(){
-
-   }
+  
 
    public void DestroyMyCards(){ 
         for(int i=user_panels[6].transform.childCount-1; i>=0; i--){
             DestroyImmediate(user_panels[6].transform.GetChild(i).gameObject);
         }
-   }
+    }
 
 
    void DealCards(int [] colour, int [] value){
