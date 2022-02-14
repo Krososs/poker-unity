@@ -276,6 +276,8 @@ public class GameManager : MonoBehaviour
 
     void ProcessCallRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
+        Debug.Log("CALL RESPONE");
+        Debug.Log(node);
               
     }
 
@@ -640,6 +642,7 @@ public class GameManager : MonoBehaviour
    }
 
    public void Call(){  //sprawdź
+        StartCoroutine(PostRequest(fold_adress,PostRequestType.CALL));
        
    }
 
