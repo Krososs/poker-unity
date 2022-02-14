@@ -69,28 +69,9 @@ public class GameManager : MonoBehaviour
 
     public static bool player;
 
-
-    // public class uState{
-    //     private GameManager parent;
-
-    //     private int cards_in_deck;
-    //     private int cards_on_boad;
-
-    //     // public fuState()
-    //     // {
-    //     //     //this.parent = parent;
-    //     // }
-
-    //     void SetCardsInDeck(int cards){
-    //         cards_in_deck=cards;
-    //     }
-
-    // }
-
 //PRIVATE
 
 //ADDRESSES
-
 
     private string state_adress;
     private string sit_adress;
@@ -98,8 +79,7 @@ public class GameManager : MonoBehaviour
     private string status_adress;
     private string leave_adress;
     
-
-    //game
+  //game
     private string call_adress;
     private string all_in_adress;
     private string check_adress;
@@ -459,9 +439,21 @@ public class GameManager : MonoBehaviour
             DestroyTable();
             phase=state["result"]["game_state"]["current_phase"];
             Debug.Log("BOARD");
-            Debug.Log(state["result"]["board"]);            
-            //ShowTable();
-        } 
+            Debug.Log(state["result"]["board"]);
+
+            foreach(KeyValuePair<string, JSONNode> card in state["result"]["board"]){
+                colour[k]=card.Value["colour"];
+                value[k]=card.Value["value"];
+                Debug.Log(card.Value["colour"]);
+                Debug.Log(card.Value["value"]);
+                k+=1;
+
+            }            
+            ShowTable(colour,value); //w każdej rundzie?
+        }
+        k=0;
+        Array.Clear(colour,0,colour.Length);
+        Array.Clear(value,0,value.Length); 
 
         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"])
         {   
@@ -472,20 +464,13 @@ public class GameManager : MonoBehaviour
                 if(entry.Key==state["result"]["game_state"]["small_blind_player_id"].ToString() && user_bets[keys[j]].transform.childCount==0){
                     BlindBet(j,state["result"]["small_blind_value"],state["result"]["big_blind_value"]);                   
                 }
-
-                Debug.Log(entry.Key);
-                Debug.Log(user_id);
-               
+              
                 if(entry.Key==user_id &&user_panels[6].transform.childCount==0){
-                    Debug.Log("MOJE REKA W FAZIE  1");
-                    Debug.Log(entry.Value["hand"]);
                     foreach(KeyValuePair<string, JSONNode> card in entry.Value["hand"]){
 
                         colour[k]=card.Value["colour"];
                         value[k]=card.Value["value"];
-                        Debug.Log("Kolor");
                         Debug.Log(card.Value["colour"]);
-                        Debug.Log("Value");
                         Debug.Log(card.Value["value"]);
                         k+=1;
                     }
@@ -520,13 +505,13 @@ public class GameManager : MonoBehaviour
      
         i=0;   
          foreach( KeyValuePair<string, JSONNode> entry in state["result"]["spectators"])
-         {
+        {
             
-             Debug.Log("specator");
-             Debug.Log(entry.Key);       
-             Debug.Log(entry.Value);
-             i+=1;                                    
-         }
+            Debug.Log("specator");
+            Debug.Log(entry.Key);       
+            Debug.Log(entry.Value);
+            i+=1;                                    
+        }
 
         Debug.Log("Specators in game: " +i.ToString());
         specators_panel.GetComponentInChildren<Text>().text = i.ToString();
@@ -534,7 +519,6 @@ public class GameManager : MonoBehaviour
         phase_panel.GetComponentInChildren<Text>().text = state["result"]["game_state"]["current_phase"];
             
     }
-
 
     public void Sit(){
         if(is_sittng==true){
@@ -679,9 +663,9 @@ public class GameManager : MonoBehaviour
     }
 
 
-    void ShowTable(int i,int [] colour, int [] value){
+    void ShowTable(int [] colour, int [] value){
         int x;
-        for(int j=0; j<i; j++){
+        for(int j=0; j<colour.Length; j++){
             x=(colour[j]-1) * 13 + (value[j]-2);
             GameObject card = Instantiate(cards[x], new Vector3(0,0,0), Quaternion.identity);
             card.transform.SetParent(table.transform,false);
