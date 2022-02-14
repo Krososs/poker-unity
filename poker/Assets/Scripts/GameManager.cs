@@ -156,6 +156,7 @@ public class GameManager : MonoBehaviour
         if(!player){
             ManageButtons(false);         
         }else{
+            ManageButtons(false);
             is_sittng=true;
             GameObject.Find("Up/DownButton").GetComponentInChildren<Text>().text = "Get up";
             user_nickname[6].GetComponentInChildren<Text>().text=username;
@@ -220,11 +221,12 @@ public class GameManager : MonoBehaviour
         Debug.Log(node);
 
         if(node["valid"]){
-            ManageButtons(true);
-            //player=true;                
+            //ManageButtons(true);
+            //player=true;
+            status_button.interactable=true;                
             user_chips[6].GetComponentInChildren<Text>().text="0";
             user_nickname[6].GetComponentInChildren<Text>().text=username;
-            user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.0f);
+            //user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.0f);
             GameObject.Find("Up/DownButton").GetComponentInChildren<Text>().text = "Get up";
 
         }
@@ -234,9 +236,13 @@ public class GameManager : MonoBehaviour
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
         Debug.Log(node);
         if(node["valid"]){
-            ManageButtons(false);
+            //ManageButtons(false);
             //player=false;
+            status="NOT_READY";
+            ManageButtons(false);
+            status_button.interactable=false;
             GameObject.Find("Up/DownButton").GetComponentInChildren<Text>().text = "Sit";
+            GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Ready";
             user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
             user_nickname[6].GetComponentInChildren<Text>().text = "";
             user_chips[6].GetComponentInChildren<Text>().text = "";
@@ -384,8 +390,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    void ManageButtons(bool o){
-        status_button.interactable=o;
+    void ManageButtons(bool o){        
         user_button1.interactable=o;
         user_button2.interactable=o;
         user_button3.interactable=o;
@@ -401,11 +406,13 @@ public class GameManager : MonoBehaviour
             status="READY";
             GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Not ready";
             user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.00f);
+            ManageButtons(true);
         }
         else{ 
             status="NOT_READY";
             GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Ready";
             user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
+            ManageButtons(false);
         }
         adress+=status;
         Debug.Log("Status");
@@ -493,6 +500,7 @@ public class GameManager : MonoBehaviour
                 user_nickname[i+1].GetComponentInChildren<Text>().text=entry.Value["username"];            
                 user_chips[i+1].GetComponentInChildren<Text>().text=entry.Value["wallet"];                          
             }
+            if(entry.Value["status"]==1) user_panels[keys[i]].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.0f);
 
             if(entry.Value["current_bet"]>0 && entry.Key==state["result"]["game_state"]["active_player_id"]){          
                 Bet(j,entry.Value["current_bet"]);
