@@ -84,6 +84,7 @@ public class GameManager : MonoBehaviour
     private string all_in_adress;
     private string check_adress;
     private string fold_adress;
+    private string raise_adress;
 
 
 //IN_GAME_VARIABLES
@@ -132,10 +133,12 @@ public class GameManager : MonoBehaviour
          get_up_adress= server_adress+table_id+"/get_up?token="+user_token;
          status_adress= server_adress+table_id+"/player_status?token="+user_token+"&status=";
          leave_adress= server_adress+table_id+"/leave?token="+user_token;
+
          call_adress= server_adress+table_id+"/call?token="+user_token;
          all_in_adress= server_adress+table_id+"/all_in?token="+user_token;
          check_adress= server_adress+table_id+"/check?token="+user_token;
          fold_adress= server_adress+table_id+"/fold?token="+user_token;
+         raise_adress= server_adress+table_id+"/raise?token="+user_token+"&amount=";
                
     }
 
@@ -273,24 +276,28 @@ public class GameManager : MonoBehaviour
 
     void ProcessCallRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
-        HandleState(node);       
+              
     }
 
     void ProcessAllInRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
-        HandleState(node);       
+               
     }
     void ProcessCheckRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
-        HandleState(node);       
+              
     }
     void ProcessFoldRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
-        HandleState(node);       
+        Debug.Log(node);
+        if(node["valid"]){
+            Debug.Log("Pasuję pomyślnie");         
+        }
+              
     }
     void ProcessRaiseRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
-        HandleState(node);       
+              
     }
 
     IEnumerator GetRequest(string uri){
@@ -433,6 +440,8 @@ public class GameManager : MonoBehaviour
         Debug.Log("GAME STATE");
         Debug.Log(state);
         Debug.Log("----------------------------------------------------- ");
+        Debug.Log("ACTIVE PLAYER");
+        Debug.Log(state["result"]["game_state"]["active_player_id"]);
 
         cards_in_deck=state["number_of_cards_in_deck"];
         cards_on_board=state["number_of_cards_on_board"];
@@ -477,8 +486,8 @@ public class GameManager : MonoBehaviour
 
                         colour[k]=card.Value["colour"];
                         value[k]=card.Value["value"];
-                        Debug.Log(card.Value["colour"]);
-                        Debug.Log(card.Value["value"]);
+                        //Debug.Log(card.Value["colour"]);
+                        //Debug.Log(card.Value["value"]);
                         k+=1;
                     }
                     DealCards(colour,value);
@@ -515,13 +524,13 @@ public class GameManager : MonoBehaviour
          foreach( KeyValuePair<string, JSONNode> entry in state["result"]["spectators"])
         {
             
-            Debug.Log("specator");
-            Debug.Log(entry.Key);       
-            Debug.Log(entry.Value);
-            i+=1;                                    
+            // Debug.Log("specator");
+            // Debug.Log(entry.Key);       
+            // Debug.Log(entry.Value);
+            // i+=1;                                    
         }
 
-        Debug.Log("Specators in game: " +i.ToString());
+        //Debug.Log("Specators in game: " +i.ToString());
         specators_panel.GetComponentInChildren<Text>().text = i.ToString();
         time_to_end_panel.GetComponentInChildren<Text>().text = state["result"]["game_state"]["time_to_end"];
         phase_panel.GetComponentInChildren<Text>().text = state["result"]["game_state"]["current_phase"];
@@ -625,7 +634,7 @@ public class GameManager : MonoBehaviour
    }
 
    public void Fold (){ //pasuj
-
+        StartCoroutine(PostRequest(fold_adress,PostRequestType.FOLD));
    }
    public void Check(){ // czekaj
    }
