@@ -41,6 +41,9 @@ public class GameManager : MonoBehaviour
     public GameObject phase_panel;
     public GameObject phase_text;
 
+    public GameObject plot_panel;
+    public GameObject plot_text;
+
     public InputField raise_input_field;
 
     public Button status_button;
@@ -677,6 +680,19 @@ public class GameManager : MonoBehaviour
             user_bets[keys[i]].GetComponentInChildren<Text>().text=value.ToString();
         }         
    }
+   void UpdatePlot(){
+       GameObject bet = Instantiate(big_bet, new Vector3(0,0,0), Quaternion.identity);
+       GameObject amount = Instantiate(plot_text, new Vector3(0,0,0), Quaternion.identity);
+
+       if(plot_panel.transform.childCount==0){
+           bet.transform.SetParent(plot_panel.transform,false);
+           amount.transform.SetParent(plot_panel.transform,false);
+           amount.GetComponent<Text>().text= lot.ToString();
+       }else{
+           plot_panel.GetComponentInChildren<Text>().text=lot.ToString();
+       }
+
+   }
    
    void HandleRaise(int i, int value){     
         GameObject im;
@@ -767,26 +783,29 @@ public class GameManager : MonoBehaviour
 
     }
 
+    
+
     public void Change(){
         //user_bets[6].GetComponentInChildren<Text>().text="pdm";
         //user_bets[6].GetComponentInChildren<Image>().sprite=big_bet;
 
     }
 
-    // //funkcja testowa 
-    // void all_bet(){
+    //funkcja testowa 
+    public void all_bet(){
+        UpdatePlot();
 
-    //     for (int i =0; i<user_bets.Length; i++){
-    //         GameObject bet = Instantiate(big_bet, new Vector3(0,0,0), Quaternion.identity);
-    //         GameObject amount = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
+        for (int i =0; i<user_bets.Length; i++){
+            GameObject bet = Instantiate(big_bet, new Vector3(0,0,0), Quaternion.identity);
+            GameObject amount = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
 
-    //         bet.transform.SetParent(user_bets[i].transform,false);
-    //         amount.transform.SetParent(user_bets[i].transform,false);
-    //         amount.GetComponent<Text>().text= "14567";
-    //         //Debug.Log("Dodaje");
-    //     }
+            bet.transform.SetParent(user_bets[i].transform,false);
+            amount.transform.SetParent(user_bets[i].transform,false);
+            amount.GetComponent<Text>().text= "14567";
+            //Debug.Log("Dodaje");
+        }
 
-    // }
+    }
 
     
 }
