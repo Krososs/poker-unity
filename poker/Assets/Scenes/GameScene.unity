@@ -5210,12 +5210,15 @@ MonoBehaviour:
   phase_text: {fileID: 6379782738405417891, guid: 09d1d2ef954e83a47a1c09564511db87, type: 3}
   plot_panel: {fileID: 1038513243}
   plot_text: {fileID: 8160618079067709783, guid: e6b50841f44ea244ab14762870bf4b85, type: 3}
+  pool_panel: {fileID: 1176975752}
+  pool_text: {fileID: 8160618079067709783, guid: e6b50841f44ea244ab14762870bf4b85, type: 3}
   raise_input_field: {fileID: 556503417}
   status_button: {fileID: 1064421363}
   user_button1: {fileID: 98028645}
   user_button2: {fileID: 1964826064}
   user_button3: {fileID: 883167308}
   up_down_button: {fileID: 1907602958}
+  all_in_button: {fileID: 1551131575}
   State: 0
 --- !u!1 &1551131573
 GameObject:

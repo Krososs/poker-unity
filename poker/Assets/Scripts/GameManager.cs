@@ -44,8 +44,12 @@ public class GameManager : MonoBehaviour
     public GameObject plot_panel;
     public GameObject plot_text;
 
-    // public GameObject plot_panel;
-    // public GameObject plot_text;
+    public GameObject pool_panel;
+    public GameObject pool_text;
+
+    // public gameObject winner_panel;
+    // public gameObject winner_name;
+   // public gameObject
 
     public InputField raise_input_field;
 
@@ -55,6 +59,7 @@ public class GameManager : MonoBehaviour
     public Button user_button2; //call_check_button
     public Button user_button3; //raise_button
     public Button up_down_button;
+    public Button all_in_button;
 
     Dictionary<int, int> keys = new Dictionary<int, int>();
     
@@ -143,6 +148,7 @@ public class GameManager : MonoBehaviour
 
         SetupWebSocket();
         InitiateObjects();
+        //all_in_button.interactable=false;
         raise_input_field.text=raise_amount.ToString();
         phase=-1;
         
@@ -445,6 +451,7 @@ public class GameManager : MonoBehaviour
 
             DestroyTable();
             DestroyUserBets();
+            DestroyPool();
             biggest_bet=0;
             phase=state["result"]["game_state"]["current_phase"];
             Debug.Log("BOARD");
@@ -488,6 +495,7 @@ public class GameManager : MonoBehaviour
 
             if(entry.Value["current_bet"]>0  && state["result"]["game_state"]["current_phase"]>0){          
                 Bet(j,entry.Value["current_bet"]);
+                
             }
             
 
@@ -513,8 +521,7 @@ public class GameManager : MonoBehaviour
 
             bet=entry.Value["current_bet"];
             if(bet>=biggest_bet){
-                biggest_bet=bet;
-                //UpdateRaiseValue(biggest_bet);                
+                biggest_bet=bet;              
             }
                                 
             j+=1;
@@ -527,8 +534,11 @@ public class GameManager : MonoBehaviour
         i=0;
         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"]){
             //if(entry.Value["status"]==1) user_panels[keys[i]].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.0f);
-            if(state["result"]["game_state"]["current_phase"]>0 && entry.Key ==state["result"]["game_state"]["active_player_id"].ToString()) user_panels[keys[i]].GetComponent<Image>().color= new Color(0.6f,0.6f,1.0f,1.0f);
-            else if (entry.Value["status"]>1) user_panels[keys[i]].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.0f);
+            if(state["result"]["game_state"]["current_phase"]>0 && entry.Key ==state["result"]["game_state"]["active_player_id"].ToString()){ 
+                user_panels[keys[i]].GetComponent<Image>().color= new Color(0.6f,0.6f,1.0f,1.0f);
+                UpdatePool(entry.Value["current_bet"]);
+            }
+            else if (entry.Value["status"]>0) user_panels[keys[i]].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.0f);
             i+=1;
 
         } 
@@ -644,6 +654,8 @@ public class GameManager : MonoBehaviour
             string current_bet =user_bets[keys[i]].GetComponentInChildren<Text>().text;
             //value+= Int16.Parse(current_bet);
             user_bets[keys[i]].GetComponentInChildren<Text>().text=value.ToString();
+            DestroyImmediate(bet);
+            DestroyImmediate(amount);
         }         
    }
    void UpdateLot(int value){
@@ -662,8 +674,24 @@ public class GameManager : MonoBehaviour
            Debug.Log("NEXT");
            Debug.Log("Wrzucam " + value +" jako lot value");
            plot_panel.GetComponentInChildren<Text>().text=value.ToString();
+           DestroyImmediate(bet);
+           DestroyImmediate(amount);
        }
 
+   }
+
+   void UpdatePool(int value){
+       GameObject amount = Instantiate(plot_text, new Vector3(0,0,0), Quaternion.identity);
+       if(pool_panel.transform.childCount==0){
+           Debug.Log("Tworzę pool");
+           amount.transform.SetParent(pool_panel.transform,false);
+           amount.GetComponent<Text>().text= value.ToString();   
+       }else{
+           int pool = Int32.Parse(pool_panel.GetComponentInChildren<Text>().text);
+           pool+=value;
+           pool_panel.GetComponentInChildren<Text>().text= pool.ToString();
+           DestroyImmediate(amount);
+       }
    }
    
    void HandleRaise(int i, int value){     
@@ -693,8 +721,7 @@ public class GameManager : MonoBehaviour
    }
 
    public void Call(){  //sprawdź
-        StartCoroutine(PostRequest(call_adress,PostRequestType.CALL));
-       
+        StartCoroutine(PostRequest(call_adress,PostRequestType.CALL));    
    }
 
    public void Raise(){ //podbij
@@ -716,7 +743,6 @@ public class GameManager : MonoBehaviour
 
    public void AllIn(){ //napierdalaj na ostro
         StartCoroutine(PostRequest(all_in_adress,PostRequestType.ALL_IN));
-
    }
 
   
@@ -741,9 +767,15 @@ public class GameManager : MonoBehaviour
     }
 
     void DestroyTable(){
-         for(int i=table.transform.childCount-1; i>=0; i--){
+
+        for(int i=table.transform.childCount-1; i>=0; i--){
             DestroyImmediate(table.transform.GetChild(i).gameObject);
         }
+    }
+
+    void DestroyPool(){
+        pool_panel.GetComponentInChildren<Text>().text= "0";
+
     }
 
     void DestroyUserBets(){
@@ -772,6 +804,10 @@ public class GameManager : MonoBehaviour
             minimum_raise_value = (biggest_bet -my_bet) + raise_amount; //(biggest_bet - mój_bet) + raise_amount                  
             raise_input_field.text = minimum_raise_value.ToString();
         }
+
+    }
+
+    void HandleWinnder(){
 
     }
 
