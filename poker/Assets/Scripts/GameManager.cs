@@ -424,8 +424,8 @@ public class GameManager : MonoBehaviour
         int j=0; //indeks kolejności graczy
         int k =0;
         int bet;
-        int [] colour = new int[3];
-        int [] value = new int[3]; 
+        int [] colour = new int[5];
+        int [] value = new int[5];  
         Debug.Log("GAME STATE");
         Debug.Log(state);
      
@@ -451,7 +451,7 @@ public class GameManager : MonoBehaviour
                 k+=1;
 
             }            
-            if (k>=2) ShowTable(colour,value); //w każdej rundzie?
+            if (k>=2) ShowTable(colour,value,k); //w każdej rundzie?
         }
         k=0;
         Array.Clear(colour,0,colour.Length);
@@ -729,10 +729,10 @@ public class GameManager : MonoBehaviour
     }
 
 
-    void ShowTable(int [] colour, int [] value){
+    void ShowTable(int [] colour, int [] value, int k){
 
         int x;
-        for(int j=0; j<colour.Length; j++){
+        for(int j=0; j<k; j++){
             x=(colour[j]-1) * 13 + (value[j]-2);
             GameObject card = Instantiate(cards[x], new Vector3(0,0,0), Quaternion.identity);
             card.transform.SetParent(table.transform,false);
