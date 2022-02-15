@@ -446,8 +446,8 @@ public class GameManager : MonoBehaviour
         int i=0; //indeks paneli
         int j=0; //indeks kolejności graczy
         int bet;
-        int [] colour = new int[2];
-        int [] value = new int[2];
+        int [] colour = new int[3];
+        int [] value = new int[3];
         int k =0;
         // Debug.Log("STATE ADDRESS");
         //Debug.Log(state_adress);
@@ -464,7 +464,7 @@ public class GameManager : MonoBehaviour
         Array.Clear(colour,0,colour.Length);
         Array.Clear(value,0,value.Length);
 
-        if(phase!=state["result"]["game_state"]["current_phase"]){
+        if(phase!=state["result"]["game_state"]["current_phase"] && state["result"]["game_state"]["current_phase"]>0 ){
 
             DestroyTable();
             phase=state["result"]["game_state"]["current_phase"];
@@ -474,12 +474,13 @@ public class GameManager : MonoBehaviour
             foreach(KeyValuePair<string, JSONNode> card in state["result"]["board"]){
                 colour[k]=card.Value["colour"];
                 value[k]=card.Value["value"];
-                Debug.Log(card.Value["colour"]);
-                Debug.Log(card.Value["value"]);
+                // Debug.Log(card.Value["colour"]);
+                // Debug.Log(card.Value["value"]);
+                Debug.Log("K: "+k+" Kolor: "+card.Value["colour"]+" Wartość: " +card.Value["value"]);
                 k+=1;
 
             }            
-            //ShowTable(colour,value); //w każdej rundzie?
+            if (k>=2) ShowTable(colour,value); //w każdej rundzie?
         }
         k=0;
         Array.Clear(colour,0,colour.Length);
