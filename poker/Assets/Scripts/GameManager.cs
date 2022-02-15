@@ -444,7 +444,8 @@ public class GameManager : MonoBehaviour
         if(phase!=state["result"]["game_state"]["current_phase"] && state["result"]["game_state"]["current_phase"]>0 ){
 
             DestroyTable();
-            //DestroyUserBets();
+            DestroyUserBets();
+            biggest_bet=0;
             phase=state["result"]["game_state"]["current_phase"];
             Debug.Log("BOARD");
             Debug.Log(state["result"]["board"]);
@@ -513,7 +514,7 @@ public class GameManager : MonoBehaviour
             bet=entry.Value["current_bet"];
             if(bet>=biggest_bet){
                 biggest_bet=bet;
-                UpdateRaiseValue(biggest_bet);                
+                //UpdateRaiseValue(biggest_bet);                
             }
                                 
             j+=1;
@@ -527,7 +528,7 @@ public class GameManager : MonoBehaviour
         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"]){
             //if(entry.Value["status"]==1) user_panels[keys[i]].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.0f);
             if(state["result"]["game_state"]["current_phase"]>0 && entry.Key ==state["result"]["game_state"]["active_player_id"].ToString()) user_panels[keys[i]].GetComponent<Image>().color= new Color(0.6f,0.6f,1.0f,1.0f);
-            else if (entry.Value["status"]==1) user_panels[keys[i]].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.0f);
+            else if (entry.Value["status"]>1) user_panels[keys[i]].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.0f);
             i+=1;
 
         } 
@@ -702,6 +703,8 @@ public class GameManager : MonoBehaviour
        if(amount>=minimum_raise_value){
            raise_value=amount.ToString();
            StartCoroutine(PostRequest(raise_adress+raise_value,PostRequestType.RAISE));
+           Debug.Log("RAISE ADRESS");
+           Debug.Log(raise_adress+raise_value);
            Debug.Log("Podbijam o:" +raise_value);
 
        }else{
@@ -726,6 +729,7 @@ public class GameManager : MonoBehaviour
 
 
    void DealCards(int [] colour, int [] value){
+
         int x= (colour[0]-1) * 13 + (value[0]-2);
         int y= (colour[1]-1) * 13 + (value[1]-2);
         Debug.Log(x);
@@ -743,7 +747,11 @@ public class GameManager : MonoBehaviour
     }
 
     void DestroyUserBets(){
-
+        for(int i=0; i<8; i++){
+            for(int x=user_bets[i].transform.childCount-1; x>=0; x--){
+                DestroyImmediate(user_bets[i].transform.GetChild(x).gameObject);
+            }
+        }
     }
 
 
