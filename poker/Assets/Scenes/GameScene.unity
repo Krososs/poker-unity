@@ -5211,7 +5211,7 @@ MonoBehaviour:
   plot_panel: {fileID: 1038513243}
   plot_text: {fileID: 8160618079067709783, guid: e6b50841f44ea244ab14762870bf4b85, type: 3}
   pool_panel: {fileID: 1176975752}
-  pool_text: {fileID: 8160618079067709783, guid: e6b50841f44ea244ab14762870bf4b85, type: 3}
+  pool_text: {fileID: 3553841487782331419, guid: 1d736d8defe339541a2c1f824244a416, type: 3}
   raise_input_field: {fileID: 556503417}
   status_button: {fileID: 1064421363}
   user_button1: {fileID: 98028645}

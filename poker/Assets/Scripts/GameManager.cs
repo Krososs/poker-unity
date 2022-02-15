@@ -100,6 +100,7 @@ public class GameManager : MonoBehaviour
     private int user_bet=0;
     private int lot=-1;
     private int phase;
+    private int user_wallet;
 
     public static bool player;
    
@@ -148,7 +149,7 @@ public class GameManager : MonoBehaviour
 
         SetupWebSocket();
         InitiateObjects();
-        //all_in_button.interactable=false;
+        all_in_button.interactable=false;
         raise_input_field.text=raise_amount.ToString();
         phase=-1;
         
@@ -433,7 +434,6 @@ public class GameManager : MonoBehaviour
         int i=0; //indeks paneli
         int j=0; //indeks kolejności graczy
         int k =0;
-        int bet;
         int [] colour = new int[5];
         int [] value = new int[5];  
         Debug.Log("GAME STATE");
@@ -451,18 +451,12 @@ public class GameManager : MonoBehaviour
 
             DestroyTable();
             DestroyUserBets();
-            DestroyPool();
             biggest_bet=0;
             phase=state["result"]["game_state"]["current_phase"];
-            Debug.Log("BOARD");
-            Debug.Log(state["result"]["board"]);
-
             foreach(KeyValuePair<string, JSONNode> card in state["result"]["board"]){
                 colour[k]=card.Value["colour"];
                 value[k]=card.Value["value"];
-                Debug.Log("K: "+k+" Kolor: "+card.Value["colour"]+" Wartość: " +card.Value["value"]);
                 k+=1;
-
             }            
             if (k>=2) ShowTable(colour,value,k); //w każdej rundzie?
         }
@@ -470,12 +464,18 @@ public class GameManager : MonoBehaviour
         Array.Clear(colour,0,colour.Length);
         Array.Clear(value,0,value.Length);
         
+        if(pool_panel.transform.childCount>0){
+            DestroyPool();
+            pool_panel.GetComponentInChildren<Text>().text=lot.ToString();       
+        }
+              
         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"])
         {   
             
             if(entry.Key==user_id){
                 keys[j]=6;                
                 user_chips[6].GetComponentInChildren<Text>().text=entry.Value["wallet"]; //portfel
+                user_wallet=entry.Value["wallet"];
                 user_bet=entry.Value["current_bet"];
                 Debug.Log("Mój bet:" + entry.Value["current_bet"]);
                                                          
@@ -495,7 +495,7 @@ public class GameManager : MonoBehaviour
 
             if(entry.Value["current_bet"]>0  && state["result"]["game_state"]["current_phase"]>0){          
                 Bet(j,entry.Value["current_bet"]);
-                
+                UpdatePool(entry.Value["current_bet"]);               
             }
             
 
@@ -510,61 +510,52 @@ public class GameManager : MonoBehaviour
 
                         colour[k]=card.Value["colour"];
                         value[k]=card.Value["value"];
-                        //Debug.Log(card.Value["colour"]);
-                        //Debug.Log(card.Value["value"]);
                         k+=1;
                     }
                     DealCards(colour,value);
-                }
-                
+                }              
             }
-
-            bet=entry.Value["current_bet"];
-            if(bet>=biggest_bet){
-                biggest_bet=bet;              
-            }
-                                
+        
+            if(entry.Value["current_bet"]>=biggest_bet)biggest_bet=entry.Value["current_bet"];                                   
             j+=1;
                                  
         }
+        if(biggest_bet>=user_wallet) all_in_button.interactable=true;
+        else all_in_button.interactable=false;
 
-        for(int x=0; x<keys.Count; x++){
-            Debug.Log(keys[x]);
-        }
+        //if(state["result"]["game_state"]["active_player_id"]==user_id) ManageButtons(true);
+        //else ManageButtons(false);
+        
+
+       
         i=0;
         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"]){
-            //if(entry.Value["status"]==1) user_panels[keys[i]].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.0f);
             if(state["result"]["game_state"]["current_phase"]>0 && entry.Key ==state["result"]["game_state"]["active_player_id"].ToString()){ 
                 user_panels[keys[i]].GetComponent<Image>().color= new Color(0.6f,0.6f,1.0f,1.0f);
-                UpdatePool(entry.Value["current_bet"]);
+                
             }
             else if (entry.Value["status"]>0) user_panels[keys[i]].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.0f);
             i+=1;
 
-        } 
+        }
+
         i=0;   
          foreach( KeyValuePair<string, JSONNode> entry in state["result"]["spectators"])
         { 
             i+=1;                                    
         }
-        Debug.Log("Active_player_id: " + state["result"]["game_state"]["active_player_id"]);
-        Debug.Log("USER_ID: "+ user_id);
-        Debug.Log("Biggest_bet " + biggest_bet);
-        Debug.Log("User_bet: " + user_bet);
-
         if(state["result"]["game_state"]["active_player_id"].ToString()==user_id && biggest_bet==user_bet && state["result"]["game_state"]["current_phase"]>1){
-            Debug.Log("Wchodzę do ifa");
+           // Debug.Log("Wchodzę do ifa");
             GameObject.Find("Call_check_button").GetComponentInChildren<Text>().text = "CHECK";
-            user_button2.onClick.RemoveListener(Call);
-            user_button2.onClick.AddListener(Check);
+            //user_button2.onClick.RemoveListener(Call);
+            //user_button2.onClick.AddListener(Check);
         }else{
             GameObject.Find("Call_check_button").GetComponentInChildren<Text>().text = "CALL";
-            user_button2.onClick.RemoveListener(Check);
-            user_button2.onClick.AddListener(Call);
+            //user_button2.onClick.RemoveListener(Check);
+            //user_button2.onClick.AddListener(Call);
 
         }
 
-        //Debug.Log("Specators in game: " +i.ToString());
         specators_panel.GetComponentInChildren<Text>().text = i.ToString();
         time_to_end_panel.GetComponentInChildren<Text>().text = state["result"]["game_state"]["time_to_end"];
         phase_panel.GetComponentInChildren<Text>().text = state["result"]["game_state"]["current_phase"];
@@ -576,10 +567,10 @@ public class GameManager : MonoBehaviour
         if(is_sittng==true){
             is_sittng=false;       
             StartCoroutine(PostRequest(get_up_adress, PostRequestType.GET_UP));
-            Debug.Log("Wstaje");
+            //Debug.Log("Wstaje");
         }else{
             is_sittng=true;
-            Debug.Log("Siadam");
+            //Debug.Log("Siadam");
             Debug.Log(sit_adress);
             StartCoroutine(PostRequest(sit_adress, PostRequestType.SIT));         
         }
@@ -611,7 +602,7 @@ public class GameManager : MonoBehaviour
    }
 
    void BlindBet(int i,int value, int value2){
-        Debug.Log("Blind_bet");
+        //Debug.Log("Blind_bet");
 
         GameObject bet = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
         GameObject amount = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
@@ -619,8 +610,8 @@ public class GameManager : MonoBehaviour
         GameObject amount2 = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
 
 
-        Debug.Log("Dodaje small blind dla user_bets[]"+keys[i]);
-        Debug.Log("Długość tablicy z kluczami: " +keys.Count);
+        //Debug.Log("Dodaje small blind dla user_bets[]"+keys[i]);
+        //Debug.Log("Długość tablicy z kluczami: " +keys.Count);
 
 
         bet.transform.SetParent(user_bets[keys[i]].transform,false);
@@ -641,7 +632,7 @@ public class GameManager : MonoBehaviour
 
    void Bet(int i, int value){
 
-        Debug.Log("Standard bet");
+        //Debug.Log("Standard bet");
         GameObject bet = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
         GameObject amount = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
 
@@ -662,17 +653,17 @@ public class GameManager : MonoBehaviour
        GameObject bet = Instantiate(big_bet, new Vector3(0,0,0), Quaternion.identity);
        GameObject amount = Instantiate(plot_text, new Vector3(0,0,0), Quaternion.identity);
 
-       Debug.Log("PLOT UPDATE");
+       //Debug.Log("PLOT UPDATE");
 
        if(plot_panel.transform.childCount==0){
-           Debug.Log("FIRST");
-           Debug.Log("Wrzucam " + value +" jako lot value");
+           //Debug.Log("FIRST");
+           //Debug.Log("Wrzucam " + value +" jako lot value");
            bet.transform.SetParent(plot_panel.transform,false);
            amount.transform.SetParent(plot_panel.transform,false);                   
            amount.GetComponent<Text>().text= value.ToString();
        }else{
-           Debug.Log("NEXT");
-           Debug.Log("Wrzucam " + value +" jako lot value");
+           //Debug.Log("NEXT");
+           //Debug.Log("Wrzucam " + value +" jako lot value");
            plot_panel.GetComponentInChildren<Text>().text=value.ToString();
            DestroyImmediate(bet);
            DestroyImmediate(amount);
@@ -681,9 +672,9 @@ public class GameManager : MonoBehaviour
    }
 
    void UpdatePool(int value){
-       GameObject amount = Instantiate(plot_text, new Vector3(0,0,0), Quaternion.identity);
+       GameObject amount = Instantiate(pool_text, new Vector3(0,0,0), Quaternion.identity);
        if(pool_panel.transform.childCount==0){
-           Debug.Log("Tworzę pool");
+           //Debug.Log("Tworzę pool");
            amount.transform.SetParent(pool_panel.transform,false);
            amount.GetComponent<Text>().text= value.ToString();   
        }else{
@@ -720,8 +711,10 @@ public class GameManager : MonoBehaviour
         StartCoroutine(PostRequest(check_adress,PostRequestType.CHECK));
    }
 
-   public void Call(){  //sprawdź
-        StartCoroutine(PostRequest(call_adress,PostRequestType.CALL));    
+   public void Call(){
+       if(GameObject.Find("Call_check_button").GetComponentInChildren<Text>().text=="CHECK")
+       StartCoroutine(PostRequest(check_adress,PostRequestType.CHECK));
+       else  StartCoroutine(PostRequest(call_adress,PostRequestType.CALL));        
    }
 
    public void Raise(){ //podbij
@@ -730,12 +723,12 @@ public class GameManager : MonoBehaviour
        if(amount>=minimum_raise_value){
            raise_value=amount.ToString();
            StartCoroutine(PostRequest(raise_adress+raise_value,PostRequestType.RAISE));
-           Debug.Log("RAISE ADRESS");
-           Debug.Log(raise_adress+raise_value);
-           Debug.Log("Podbijam o:" +raise_value);
+           //Debug.Log("RAISE ADRESS");
+           //Debug.Log(raise_adress+raise_value);
+           //Debug.Log("Podbijam o:" +raise_value);
 
        }else{
-           Debug.Log("Niepoprawna wartość raise");
+           //Debug.Log("Niepoprawna wartość raise");
        }  
     //    Debug.Log("Ustawoina wartość RAISE");
     //    Debug.Log(amount);
@@ -774,7 +767,8 @@ public class GameManager : MonoBehaviour
     }
 
     void DestroyPool(){
-        pool_panel.GetComponentInChildren<Text>().text= "0";
+        if(pool_panel.transform.childCount>0)
+            pool_panel.GetComponentInChildren<Text>().text= "0";
 
     }
 
