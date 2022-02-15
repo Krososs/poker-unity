@@ -4920,6 +4920,7 @@ MonoBehaviour:
   small_bet: {fileID: 7772291651362454258, guid: ac801576b4a16824497e5be18318294f, type: 3}
   medium_bet: {fileID: 5054906066115466635, guid: d66b93a32ed13394bbc62d0f960e72cb, type: 3}
   big_bet: {fileID: 623756428480281764, guid: a2d385440c829e6429c168d151e6362f, type: 3}
+  invisible_bet: {fileID: 1918581089832119467, guid: 8f760c2c8d05cb74094e4f88f22a5b53, type: 3}
   bet_amount: {fileID: 7039776394817368206, guid: cb6686a417477d740b100041d097480b, type: 3}
   nickname: {fileID: 4268417533956407873, guid: 47201c897157e664daa69d86f866cc4e, type: 3}
   chips: {fileID: 4268417533956407873, guid: 47201c897157e664daa69d86f866cc4e, type: 3}
