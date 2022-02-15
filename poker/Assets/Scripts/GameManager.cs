@@ -44,6 +44,9 @@ public class GameManager : MonoBehaviour
     public GameObject plot_panel;
     public GameObject plot_text;
 
+    // public GameObject plot_panel;
+    // public GameObject plot_text;
+
     public InputField raise_input_field;
 
     public Button status_button;
@@ -90,7 +93,7 @@ public class GameManager : MonoBehaviour
     private string status="NOT_READY";
     private bool is_sittng=false;
     private int user_bet=0;
-    private int lot=0;
+    private int lot=-1;
     private int phase;
 
     public static bool player;
@@ -142,6 +145,7 @@ public class GameManager : MonoBehaviour
         InitiateObjects();
         raise_input_field.text=raise_amount.ToString();
         phase=-1;
+        
 
         if(!player){
             ManageButtons(false);         
@@ -429,9 +433,9 @@ public class GameManager : MonoBehaviour
         Debug.Log("GAME STATE");
         Debug.Log(state);
      
-        if(lot!=state["lot"]){
-            lot=state["lot"];
-            UpdateLot();
+        if(lot!=state["result"]["lot"]){
+            lot=state["result"]["lot"];
+            UpdateLot(lot);
         }
         
         Array.Clear(colour,0,colour.Length);
@@ -440,6 +444,7 @@ public class GameManager : MonoBehaviour
         if(phase!=state["result"]["game_state"]["current_phase"] && state["result"]["game_state"]["current_phase"]>0 ){
 
             DestroyTable();
+            //DestroyUserBets();
             phase=state["result"]["game_state"]["current_phase"];
             Debug.Log("BOARD");
             Debug.Log(state["result"]["board"]);
@@ -483,6 +488,7 @@ public class GameManager : MonoBehaviour
             if(entry.Value["current_bet"]>0  && state["result"]["game_state"]["current_phase"]>0){          
                 Bet(j,entry.Value["current_bet"]);
             }
+            
 
             if(state["result"]["game_state"]["current_phase"]==1)
             {
@@ -519,7 +525,9 @@ public class GameManager : MonoBehaviour
         }
         i=0;
         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"]){
-            if(entry.Value["status"]==1) user_panels[keys[i]].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.0f);
+            //if(entry.Value["status"]==1) user_panels[keys[i]].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.0f);
+            if(state["result"]["game_state"]["current_phase"]>0 && entry.Key ==state["result"]["game_state"]["active_player_id"].ToString()) user_panels[keys[i]].GetComponent<Image>().color= new Color(0.6f,0.6f,1.0f,1.0f);
+            else if (entry.Value["status"]==1) user_panels[keys[i]].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.0f);
             i+=1;
 
         } 
@@ -637,16 +645,22 @@ public class GameManager : MonoBehaviour
             user_bets[keys[i]].GetComponentInChildren<Text>().text=value.ToString();
         }         
    }
-   void UpdateLot(){
+   void UpdateLot(int value){
        GameObject bet = Instantiate(big_bet, new Vector3(0,0,0), Quaternion.identity);
        GameObject amount = Instantiate(plot_text, new Vector3(0,0,0), Quaternion.identity);
 
+       Debug.Log("PLOT UPDATE");
+
        if(plot_panel.transform.childCount==0){
+           Debug.Log("FIRST");
+           Debug.Log("Wrzucam " + value +" jako lot value");
            bet.transform.SetParent(plot_panel.transform,false);
-           amount.transform.SetParent(plot_panel.transform,false);
-           amount.GetComponent<Text>().text= lot.ToString();
+           amount.transform.SetParent(plot_panel.transform,false);                   
+           amount.GetComponent<Text>().text= value.ToString();
        }else{
-           plot_panel.GetComponentInChildren<Text>().text=lot.ToString();
+           Debug.Log("NEXT");
+           Debug.Log("Wrzucam " + value +" jako lot value");
+           plot_panel.GetComponentInChildren<Text>().text=value.ToString();
        }
 
    }
@@ -728,6 +742,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void DestroyUserBets(){
+
+    }
+
 
     void ShowTable(int [] colour, int [] value, int k){
 
@@ -751,7 +769,7 @@ public class GameManager : MonoBehaviour
 
     //funkcja testowa 
     public void all_bet(){
-        UpdateLot();
+        UpdateLot(8);
 
         for (int i =0; i<user_bets.Length; i++){
             GameObject bet = Instantiate(big_bet, new Vector3(0,0,0), Quaternion.identity);
