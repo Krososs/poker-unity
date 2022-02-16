@@ -527,6 +527,8 @@ public class GameManager : MonoBehaviour
 
         //if(state["result"]["game_state"]["active_player_id"]==user_id) ManageButtons(true);
         //else ManageButtons(false);
+
+        if(state["result"]["game_state"]["current_phase"]==6) HandleWinner("Wygrany" , 100);
         
 
        
@@ -547,15 +549,9 @@ public class GameManager : MonoBehaviour
             i+=1;                                    
         }
         if(state["result"]["game_state"]["active_player_id"].ToString()==user_id && biggest_bet==user_bet && state["result"]["game_state"]["current_phase"]>1){
-           // Debug.Log("Wchodzę do ifa");
-            GameObject.Find("Call_check_button").GetComponentInChildren<Text>().text = "CHECK";
-            //user_button2.onClick.RemoveListener(Call);
-            //user_button2.onClick.AddListener(Check);
+            GameObject.Find("Call_check_button").GetComponentInChildren<Text>().text = "CHECK";         
         }else{
             GameObject.Find("Call_check_button").GetComponentInChildren<Text>().text = "CALL";
-            //user_button2.onClick.RemoveListener(Check);
-            //user_button2.onClick.AddListener(Call);
-
         }
 
         specators_panel.GetComponentInChildren<Text>().text = i.ToString();
@@ -813,6 +809,7 @@ public class GameManager : MonoBehaviour
         data.transform.SetParent(winner_panel.transform,false);
 
         button.transform.SetParent(winner_panel.transform,false);
+        button.onClick.AddListener(Exit);
 
 
 
