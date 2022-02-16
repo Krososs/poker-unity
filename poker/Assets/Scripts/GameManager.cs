@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviour
     private string status="NOT_READY";
     private bool is_sittng=false;
     private int user_bet=0;
-    private int lot=-1;
+    private int lot=0;
     private int phase;
     private int user_wallet;
     public float timeRemaining=0;
