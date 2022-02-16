@@ -103,6 +103,7 @@ public class GameManager : MonoBehaviour
     private int lot=-1;
     private int phase;
     private int user_wallet;
+    public float timeRemaining=0;
 
     public static bool player;
    
@@ -170,6 +171,11 @@ public class GameManager : MonoBehaviour
     }
 
     void Update() {
+
+        if(timeRemaining>0){
+            timeRemaining-=Time.deltaTime;
+            DisplayTime(timeRemaining);
+        }
 
          #if !UNITY_WEBGL || UNITY_EDITOR
         websocket.DispatchMessageQueue();
@@ -451,6 +457,7 @@ public class GameManager : MonoBehaviour
 
         if(phase!=state["result"]["game_state"]["current_phase"] && state["result"]["game_state"]["current_phase"]>0 ){
 
+            timeRemaining=state["result"]["game_state"]["time_to_end"];
             DestroyTable();
             DestroyUserBets();
             biggest_bet=0;
@@ -462,6 +469,7 @@ public class GameManager : MonoBehaviour
             }            
             if (k>=2) ShowTable(colour,value,k); //w każdej rundzie?
         }
+        timeRemaining=state["result"]["game_state"]["time_to_end"];
         k=0;
         Array.Clear(colour,0,colour.Length);
         Array.Clear(value,0,value.Length);
@@ -555,10 +563,16 @@ public class GameManager : MonoBehaviour
         }
 
         specators_panel.GetComponentInChildren<Text>().text = i.ToString();
-        time_to_end_panel.GetComponentInChildren<Text>().text = state["result"]["game_state"]["time_to_end"];
+        //time_to_end_panel.GetComponentInChildren<Text>().text = state["result"]["game_state"]["time_to_end"];
         phase_panel.GetComponentInChildren<Text>().text = state["result"]["game_state"]["current_phase"];
         message=true;
             
+    }
+
+    void DisplayTime(float time){
+        time+=1;
+        float second = Mathf.FloorToInt(time % 60);
+        time_to_end_panel.GetComponentInChildren<Text>().text = second.ToString();
     }
 
     public void Sit(){
