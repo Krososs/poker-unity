@@ -530,8 +530,8 @@ public class GameManager : MonoBehaviour
         if(biggest_bet>=user_wallet) all_in_button.interactable=true;
         else all_in_button.interactable=false;
 
-        //if(state["result"]["game_state"]["active_player_id"]==user_id) ManageButtons(true);
-        //else ManageButtons(false);
+        if(state["result"]["game_state"]["active_player_id"].ToString()==user_id) ManageButtons(true);
+        else ManageButtons(false);
 
         if(state["result"]["game_state"]["current_phase"]==6) HandleWinner("Wygrany" , 100);
         
