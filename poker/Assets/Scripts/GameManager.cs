@@ -47,9 +47,10 @@ public class GameManager : MonoBehaviour
     public GameObject pool_panel;
     public GameObject pool_text;
 
-    // public gameObject winner_panel;
-    // public gameObject winner_name;
-   // public gameObject
+    public GameObject winner_panel;
+
+    public GameObject winner_name;
+    public GameObject winner_data;
 
     public InputField raise_input_field;
 
@@ -60,6 +61,7 @@ public class GameManager : MonoBehaviour
     public Button user_button3; //raise_button
     public Button up_down_button;
     public Button all_in_button;
+    public Button exit_button;
 
     Dictionary<int, int> keys = new Dictionary<int, int>();
     
@@ -723,15 +725,10 @@ public class GameManager : MonoBehaviour
        if(amount>=minimum_raise_value){
            raise_value=amount.ToString();
            StartCoroutine(PostRequest(raise_adress+raise_value,PostRequestType.RAISE));
-           //Debug.Log("RAISE ADRESS");
-           //Debug.Log(raise_adress+raise_value);
-           //Debug.Log("Podbijam o:" +raise_value);
-
        }else{
-           //Debug.Log("Niepoprawna wartość raise");
+           Debug.Log("Niepoprawna wartość raise");
        }  
-    //    Debug.Log("Ustawoina wartość RAISE");
-    //    Debug.Log(amount);
+
    }
 
    public void AllIn(){ //napierdalaj na ostro
@@ -801,7 +798,28 @@ public class GameManager : MonoBehaviour
 
     }
 
-    void HandleWinnder(){
+    void HandleWinner(string nick, int wallet){
+
+        GameObject winner_nickname =  Instantiate(winner_name, new Vector3(0,0,0), Quaternion.identity);
+        GameObject data =  Instantiate(winner_data, new Vector3(0,0,0), Quaternion.identity);
+        Button button =  Instantiate(exit_button, new Vector3(0,0,0), Quaternion.identity);
+
+        winner_panel.GetComponent<Image>().color= new Color(0.86f,0.62f,0.05f,0.9f);
+
+        winner_nickname.GetComponent<Text>().text="The winner is "+nick;
+        data.GetComponent<Text>().text="Wallet "+wallet.ToString();
+
+        winner_nickname.transform.SetParent(winner_panel.transform,false);
+        data.transform.SetParent(winner_panel.transform,false);
+
+        button.transform.SetParent(winner_panel.transform,false);
+
+
+
+    }
+
+    public void Exit(){
+        SceneManager.LoadScene(3);
 
     }
 
