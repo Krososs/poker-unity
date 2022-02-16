@@ -534,9 +534,8 @@ public class GameManager : MonoBehaviour
         else ManageButtons(false);
 
         if(state["result"]["game_state"]["current_phase"]==6) HandleWinner("Wygrany" , 100);
+        if(state["result"]["game_state"]["current_phase"]==5) DestroyMyCards();
         
-
-       
         i=0;
         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"]){
             if(state["result"]["game_state"]["current_phase"]>0 && entry.Key ==state["result"]["game_state"]["active_player_id"].ToString()){ 
@@ -545,7 +544,6 @@ public class GameManager : MonoBehaviour
             }
             else if (entry.Value["status"]>0) user_panels[keys[i]].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.0f);
             i+=1;
-
         }
 
         i=0;   
@@ -560,7 +558,6 @@ public class GameManager : MonoBehaviour
         }
 
         specators_panel.GetComponentInChildren<Text>().text = i.ToString();
-        //time_to_end_panel.GetComponentInChildren<Text>().text = state["result"]["game_state"]["time_to_end"];
         phase_panel.GetComponentInChildren<Text>().text = state["result"]["game_state"]["current_phase"];
         message=true;
             
@@ -591,25 +588,6 @@ public class GameManager : MonoBehaviour
         Debug.Log(leave_adress);
     }
 
-//    public void UpdateGameState(GameState newState){
-//        State=newState;
-
-//        switch(newState){
-
-//            case GameState.Draw_test:
-//                 break;
-//             case GameState.Add_money:
-//                 break;
-//             case GameState.Start_game:
-//                 break;
-//             default:
-//                 Debug.Log("Popsułeś");
-//                 break;
-//         }
-
-//         OnGameStateChanged?.Invoke(newState);
-//    }
-
    void BlindBet(int i,int value, int value2){
         //Debug.Log("Blind_bet");
 
@@ -617,11 +595,6 @@ public class GameManager : MonoBehaviour
         GameObject amount = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
         GameObject bet2 = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
         GameObject amount2 = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
-
-
-        //Debug.Log("Dodaje small blind dla user_bets[]"+keys[i]);
-        //Debug.Log("Długość tablicy z kluczami: " +keys.Count);
-
 
         bet.transform.SetParent(user_bets[keys[i]].transform,false);
         amount.transform.SetParent(user_bets[keys[i]].transform,false);
@@ -662,17 +635,11 @@ public class GameManager : MonoBehaviour
        GameObject bet = Instantiate(big_bet, new Vector3(0,0,0), Quaternion.identity);
        GameObject amount = Instantiate(plot_text, new Vector3(0,0,0), Quaternion.identity);
 
-       //Debug.Log("PLOT UPDATE");
-
        if(plot_panel.transform.childCount==0){
-           //Debug.Log("FIRST");
-           //Debug.Log("Wrzucam " + value +" jako lot value");
            bet.transform.SetParent(plot_panel.transform,false);
            amount.transform.SetParent(plot_panel.transform,false);                   
            amount.GetComponent<Text>().text= value.ToString();
        }else{
-           //Debug.Log("NEXT");
-           //Debug.Log("Wrzucam " + value +" jako lot value");
            plot_panel.GetComponentInChildren<Text>().text=value.ToString();
            DestroyImmediate(bet);
            DestroyImmediate(amount);
@@ -718,7 +685,7 @@ public class GameManager : MonoBehaviour
 
    }
 
-   public void AllIn(){ //napierdalaj na ostro
+   public void AllIn(){ //
         StartCoroutine(PostRequest(all_in_adress,PostRequestType.ALL_IN));
    }
 
@@ -732,7 +699,6 @@ public class GameManager : MonoBehaviour
 
 
    void DealCards(int [] colour, int [] value){
-
         int x= (colour[0]-1) * 13 + (value[0]-2);
         int y= (colour[1]-1) * 13 + (value[1]-2);
         Debug.Log(x);
