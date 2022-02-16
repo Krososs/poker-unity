@@ -12,15 +12,12 @@ using UnityEngine.SceneManagement;
 
 public class LoginMenu : MonoBehaviour
 {
-
     [Serializable]   
     public class MyClass
     {
          public string username;
-         public string password;
-        
+         public string password;      
     }
-
        
     public static string username;
     public static string server_adress="vps.damol.pl:4000";
@@ -39,9 +36,7 @@ public class LoginMenu : MonoBehaviour
         myObject.password=HashedPass;
 
         string n = JsonUtility.ToJson(myObject);
-        //Debug.Log(n);
         string adress= server_adress+"/login";
-
         StartCoroutine(GetRequest(adress,n)); 
     }
 
@@ -59,20 +54,13 @@ public class LoginMenu : MonoBehaviour
 
     void ProcessServerRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
-        Debug.Log(node["result"]["user_id"]);
-        Debug.Log(node["valid"]);
-        Debug.Log(node["result"]["token"]);
-
         if(node["valid"]==true){
-            Debug.Log("Zalogowano");
             GameManager.username=username;
             GameManager.user_id=node["result"]["user_id"];
             MainMenu.token= node["result"]["token"];
             SceneManager.LoadScene(3);
         }
         else{
-
-            Debug.Log(node);
             GameObject _error = Instantiate(error, new Vector3(0,0,0), Quaternion.identity);
             _error.transform.SetParent(panel.transform,false);
             _error.GetComponent<Text>().text = "Wrong username or password";

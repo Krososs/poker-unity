@@ -56,7 +56,6 @@ public class RegisterMenu : MonoBehaviour
 
     void ProcessServerRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
-        Debug.Log(node);
         if(node["valid"]==true){
              SceneManager.LoadScene(0);
         }
@@ -70,8 +69,6 @@ public class RegisterMenu : MonoBehaviour
             GameObject _error = Instantiate(error, new Vector3(0,0,0), Quaternion.identity);
             _error.transform.SetParent(panel.transform,false);
             _error.GetComponent<Text>().text = "Passwords do not match";
-            Debug.Log("Hasła nie są identyczne");
-
         }
         else{
             var hash = new Hash128();
@@ -82,19 +79,11 @@ public class RegisterMenu : MonoBehaviour
             user.username=username;
             user.password=HashedPass;
             user.email=email;
-
             string adress=server_adress+"/register";
-            Debug.Log(adress);
             string n = JsonUtility.ToJson(user);
             StartCoroutine(GetRequest(adress,n)); 
-
-        }
-
-       
-        
+        }         
     }
-
-  
 
     IEnumerator GetRequest(string uri, string n){
 

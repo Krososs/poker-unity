@@ -35,33 +35,21 @@ public class table : MonoBehaviour
 
     void ProcessServerRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
-
-        Debug.Log(node);
         if(node["valid"]){
-            Debug.Log("Użytkownik: "+user_token);
-            Debug.Log("Dołącza do stołu: " +table_id);
             GameManager.user_token=user_token;
             GameManager.table_id=table_id;
             GameManager.player=false;
             GameManager.port=table_port;
             SceneManager.LoadScene(6);
 
-        }else{
-            Debug.Log(node);
-        }
-       
+        }      
     }
-
-
 
     IEnumerator GetRequest(string uri){        
         string n ="eeeeeeee";
         byte[] bytes = Encoding.ASCII.GetBytes(n);
         UnityWebRequest www = UnityWebRequest.Post(uri,n);
         UploadHandler uploader = new UploadHandlerRaw(bytes);
-
-        
-        //uploader.contentType = "application/json";
 
         www.uploadHandler = uploader;
         yield return www.SendWebRequest();
@@ -75,7 +63,6 @@ public class table : MonoBehaviour
         }
 
     }
-    
-    
+       
 
 }

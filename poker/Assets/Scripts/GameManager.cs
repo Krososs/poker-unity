@@ -106,10 +106,8 @@ public class GameManager : MonoBehaviour
     public float timeRemaining=0;
 
     public static bool player;
-   
-    
     public static GameManager Instance;
-    public GameState State;
+
 
     enum PostRequestType{
         SIT,
@@ -125,7 +123,6 @@ public class GameManager : MonoBehaviour
 
     WebSocket websocket;
 
-    public static event Action<GameState> OnGameStateChanged;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -594,24 +591,24 @@ public class GameManager : MonoBehaviour
         Debug.Log(leave_adress);
     }
 
-   public void UpdateGameState(GameState newState){
-       State=newState;
+//    public void UpdateGameState(GameState newState){
+//        State=newState;
 
-       switch(newState){
+//        switch(newState){
 
-           case GameState.Draw_test:
-                break;
-            case GameState.Add_money:
-                break;
-            case GameState.Start_game:
-                break;
-            default:
-                Debug.Log("Popsułeś");
-                break;
-        }
+//            case GameState.Draw_test:
+//                 break;
+//             case GameState.Add_money:
+//                 break;
+//             case GameState.Start_game:
+//                 break;
+//             default:
+//                 Debug.Log("Popsułeś");
+//                 break;
+//         }
 
-        OnGameStateChanged?.Invoke(newState);
-   }
+//         OnGameStateChanged?.Invoke(newState);
+//    }
 
    void BlindBet(int i,int value, int value2){
         //Debug.Log("Blind_bet");
@@ -696,26 +693,6 @@ public class GameManager : MonoBehaviour
            DestroyImmediate(amount);
        }
    }
-   
-   void HandleRaise(int i, int value){     
-        GameObject im;
-        if(value > 0 && value <50){
-            im = small_bet;
-        }
-        else if(value>50 && value<100){
-            im=medium_bet;
-        }
-        else{
-            im=big_bet;
-        }
-
-        GameObject bet = Instantiate(im, new Vector3(0,0,0), Quaternion.identity);
-        GameObject amount = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
-        bet.transform.SetParent(user_bets[i].transform,false);
-        amount.transform.SetParent(user_bets[i].transform,false);
-        amount.GetComponent<Text>().text= value.ToString();
-   }
-
    public void Fold (){ //pasuj
         StartCoroutine(PostRequest(fold_adress,PostRequestType.FOLD));
    }
@@ -828,33 +805,8 @@ public class GameManager : MonoBehaviour
 
 
     }
-
     public void Exit(){
         SceneManager.LoadScene(3);
 
     }
-
-    //funkcja testowa 
-    public void all_bet(){
-        UpdateLot(8);
-
-        for (int i =0; i<user_bets.Length; i++){
-            GameObject bet = Instantiate(big_bet, new Vector3(0,0,0), Quaternion.identity);
-            GameObject amount = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
-
-            bet.transform.SetParent(user_bets[i].transform,false);
-            amount.transform.SetParent(user_bets[i].transform,false);
-            amount.GetComponent<Text>().text= "14567";
-            //Debug.Log("Dodaje");
-        }
-
-    }
-
-    
-}
-
-public enum GameState {
-    Start_game,
-    Draw_test,
-    Add_money
 }

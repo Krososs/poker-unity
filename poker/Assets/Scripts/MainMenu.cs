@@ -15,8 +15,6 @@ public class MainMenu : MonoBehaviour
 
     void Start(){
         TableListMenu.token=token;
-        Debug.Log("Token w menu:" + token);
-
     }
 
     public void RankingScene(){
@@ -38,7 +36,6 @@ public class MainMenu : MonoBehaviour
 
     public void GameScene(){
         Create_game();
-        //SceneManager.LoadScene(6);
     }
 
     public void Logout(){
@@ -50,7 +47,6 @@ public class MainMenu : MonoBehaviour
 
     void ProcessServerRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
-        Debug.Log(node);
         string table_id="";
         int port=0;
 
@@ -62,21 +58,14 @@ public class MainMenu : MonoBehaviour
             }else{
                 port=entry.Value;
             }
-        }
-        Debug.Log(table_id);
-        Debug.Log(port);
-        
+        }    
         GameManager.table_id=table_id;
         GameManager.port=port.ToString();
-
-        // Debug.Log("Tworzę stół");
-        // Debug.Log(node["result"]);
         SceneManager.LoadScene(6);   
     }
 
     void ProcessLogout(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
-        Debug.Log(node);   
     }
 
    IEnumerator PutRequest(string uri){
