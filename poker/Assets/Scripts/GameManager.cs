@@ -534,7 +534,13 @@ public class GameManager : MonoBehaviour
         else ManageButtons(false);
 
         if(state["result"]["game_state"]["current_phase"]==6) HandleWinner("Wygrany" , 100);
-        if(state["result"]["game_state"]["current_phase"]==5) DestroyMyCards();
+        if(state["result"]["game_state"]["current_phase"]==5){ 
+            DestroyMyCards();
+            status="NOT_READY";
+            GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Ready";
+            user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
+            ManageButtons(false);
+        }
         
         i=0;
         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"]){
