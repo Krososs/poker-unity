@@ -155,7 +155,8 @@ public class GameManager : MonoBehaviour
         
 
         if(!player){
-            ManageButtons(false);         
+            ManageButtons(false);
+            status_button.interactable=false;         
         }else{
             ManageButtons(false);
             is_sittng=true;
@@ -508,9 +509,9 @@ public class GameManager : MonoBehaviour
 
             if(state["result"]["game_state"]["current_phase"]==1)
             {
-                if(entry.Key==state["result"]["game_state"]["small_blind_player_id"].ToString() && user_bets[keys[j]].transform.childCount==0 ){
-                    BlindBet(j,state["result"]["small_blind_value"],state["result"]["big_blind_value"]);                   
-                }
+                // if(entry.Key==state["result"]["game_state"]["small_blind_player_id"].ToString() && user_bets[keys[j]].transform.childCount==0 ){
+                //     BlindBet(j,state["result"]["small_blind_value"],state["result"]["big_blind_value"]);                   
+                // }
               
                 if(entry.Key==user_id &&user_panels[6].transform.childCount==0){ // wyświetlanie kart w panelu gracza
                     foreach(KeyValuePair<string, JSONNode> card in entry.Value["hand"]){
@@ -579,12 +580,14 @@ public class GameManager : MonoBehaviour
         if(is_sittng==true){
             is_sittng=false;       
             StartCoroutine(PostRequest(get_up_adress, PostRequestType.GET_UP));
+            status_button.interactable=false;
             //Debug.Log("Wstaje");
         }else{
             is_sittng=true;
             //Debug.Log("Siadam");
             Debug.Log(sit_adress);
-            StartCoroutine(PostRequest(sit_adress, PostRequestType.SIT));         
+            StartCoroutine(PostRequest(sit_adress, PostRequestType.SIT)); 
+            status_button.interactable=true;        
         }
               
     }
