@@ -509,10 +509,7 @@ public class GameManager : MonoBehaviour
 
             if(state["result"]["game_state"]["current_phase"]==1)
             {
-                // if(entry.Key==state["result"]["game_state"]["small_blind_player_id"].ToString() && user_bets[keys[j]].transform.childCount==0 ){
-                //     BlindBet(j,state["result"]["small_blind_value"],state["result"]["big_blind_value"]);                   
-                // }
-              
+                          
                 if(entry.Key==user_id &&user_panels[6].transform.childCount==0){ // wyświetlanie kart w panelu gracza
                     foreach(KeyValuePair<string, JSONNode> card in entry.Value["hand"]){
 
@@ -534,7 +531,24 @@ public class GameManager : MonoBehaviour
         if(state["result"]["game_state"]["active_player_id"].ToString()==user_id) ManageButtons(true);
         else ManageButtons(false);
 
-        if(state["result"]["game_state"]["current_phase"]==6) HandleWinner("Wygrany" , 100);
+        if(state["result"]["game_state"]["current_phase"]==6){
+            List<string> winners = new List<string>(); 
+            
+            Debug.Log("TABLICA WINNERS");
+            Debug.Log("Indeksy w pętli");
+
+            foreach(KeyValuePair<string, JSONNode> id in state["result"]["game_state"]["game_result"]["winners"]){
+                Debug.Log(id.Value);
+                foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"]){
+                    if(id.Value.ToString()==entry.Key ) winners.Add(entry.Value["username"]);
+                }
+            }
+            Debug.Log("Cała tablica");
+            Debug.Log(state["result"]["game_state"]["game_result"]["winners"]);
+         
+            HandleWinner(winners, state["result"]["game_state"]["game_result"]["price"]);
+        }
+        
         if(state["result"]["game_state"]["current_phase"]==5){ 
             DestroyMyCards();
             status="NOT_READY";
@@ -760,18 +774,25 @@ public class GameManager : MonoBehaviour
 
     }
 
-    void HandleWinner(string nick, int wallet){
+    void HandleWinner( List<string> winners, int wallet){
 
-        GameObject winner_nickname =  Instantiate(winner_name, new Vector3(0,0,0), Quaternion.identity);
+        GameObject _winners=  Instantiate(winner_name, new Vector3(0,0,0), Quaternion.identity);
         GameObject data =  Instantiate(winner_data, new Vector3(0,0,0), Quaternion.identity);
         Button button =  Instantiate(exit_button, new Vector3(0,0,0), Quaternion.identity);
 
         winner_panel.GetComponent<Image>().color= new Color(0.86f,0.62f,0.05f,0.9f);
 
-        winner_nickname.GetComponent<Text>().text="The winner is "+nick;
-        data.GetComponent<Text>().text="Wallet "+wallet.ToString();
+        _winners.GetComponent<Text>().text="Winners:";
+        _winners.transform.SetParent(winner_panel.transform,false);
 
-        winner_nickname.transform.SetParent(winner_panel.transform,false);
+        foreach(string winner in winners){
+            GameObject _winner=  Instantiate(winner_name, new Vector3(0,0,0), Quaternion.identity);
+            _winner.GetComponent<Text>().text=winner;
+            _winner.transform.SetParent(winner_panel.transform,false);
+        }
+
+
+        data.GetComponent<Text>().text="Prize: "+wallet.ToString();
         data.transform.SetParent(winner_panel.transform,false);
 
         button.transform.SetParent(winner_panel.transform,false);

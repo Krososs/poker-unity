@@ -900,7 +900,7 @@ MonoBehaviour:
   m_Padding:
     m_Left: 60
     m_Right: 0
-    m_Top: 230
+    m_Top: 50
     m_Bottom: 0
   m_ChildAlignment: 0
   m_StartCorner: 0
@@ -908,7 +908,7 @@ MonoBehaviour:
   m_CellSize: {x: 100, y: 100}
   m_Spacing: {x: 0, y: 0}
   m_Constraint: 2
-  m_ConstraintCount: 3
+  m_ConstraintCount: 12
 --- !u!224 &227997963 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2831224040347213390, guid: 22c851c8adff9f5488da7fc63e71ca19, type: 3}
@@ -4634,7 +4634,6 @@ MonoBehaviour:
   all_in_button: {fileID: 1551131575}
   exit_button: {fileID: 8447716352376614314, guid: e5eb9d4f7ce9e7c489593074646a2625, type: 3}
   timeRemaining: 0
-  State: 0
 --- !u!1 &1551131573
 GameObject:
   m_ObjectHideFlags: 0
