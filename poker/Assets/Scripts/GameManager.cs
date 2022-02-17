@@ -561,9 +561,7 @@ public class GameManager : MonoBehaviour
             j+=1;
                                  
         }
-        Debug.Log("BIGGEST_BET "+biggest_bet);
-        Debug.Log("USER_WALLET "+user_wallet);
-
+        
         if(state["result"]["game_state"]["active_player_id"].ToString()==user_id) ManageButtons(true);
         else ManageButtons(false);
 
@@ -627,7 +625,6 @@ public class GameManager : MonoBehaviour
             DeleteLot();
            
         }else next_round=true;
-
         specators_panel.GetComponentInChildren<Text>().text = i.ToString();
         phase_panel.GetComponentInChildren<Text>().text = state["result"]["game_state"]["current_phase"];
         message=true;
@@ -653,7 +650,6 @@ public class GameManager : MonoBehaviour
 
     public void LeaveTable(){
         StartCoroutine(PostRequest(leave_adress,PostRequestType.LEAVE));
-        Debug.Log(leave_adress);
     }
 
    void Bet(int i, int value){
@@ -724,7 +720,6 @@ public class GameManager : MonoBehaviour
 
    public void Raise(){ //podbij
        int amount = Int16.Parse(raise_input_field.text);
-
        if(amount>=minimum_raise_value){
            raise_value=amount.ToString();
            StartCoroutine(PostRequest(raise_adress+raise_value,PostRequestType.RAISE));
@@ -734,11 +729,9 @@ public class GameManager : MonoBehaviour
 
    }
 
-   public void AllIn(){ //
+   public void AllIn(){ 
         StartCoroutine(PostRequest(all_in_adress,PostRequestType.ALL_IN));
    }
-
-  
 
    public void DestroyUserCards(){
        for(int c=0; c<8; c++){        
@@ -760,7 +753,6 @@ public class GameManager : MonoBehaviour
     }
 
     void DestroyTable(){
-
         for(int i=table.transform.childCount-1; i>=0; i--){
             DestroyImmediate(table.transform.GetChild(i).gameObject);
         }
@@ -792,34 +784,6 @@ public class GameManager : MonoBehaviour
 
     }
 
-    void UpdateRaiseValue(int biggest_bet){
-        if(user_bets[6].transform.childCount>0){
-            int my_bet= Int16.Parse(user_bets[6].GetComponentInChildren<Text>().text);
-            minimum_raise_value = (biggest_bet -my_bet) + raise_amount; //(biggest_bet - mój_bet) + raise_amount                  
-            raise_input_field.text = minimum_raise_value.ToString();
-        }
-
-    }
-
-    public void AllCards(){
-        for(int i =0; i<8; i++){
-            GameObject playerCard = Instantiate(cards[2], new Vector3(0,0,0), Quaternion.identity);
-            GameObject playerCard2 = Instantiate(cards[2], new Vector3(0,0,0), Quaternion.identity);
-            playerCard.transform.SetParent(user_panels[i].transform,false);
-            playerCard2.transform.SetParent(user_panels[i].transform,false);  
-
-        }
-    }
-
-    public void Tablee(){
-        for(int i=0; i<5; i++){
-            GameObject card = Instantiate(cards[15], new Vector3(0,0,0), Quaternion.identity);
-            card.transform.SetParent(table.transform,false);
-        }
-
-    }
-
-  
     void HandleWinner( List<string> winners, int wallet){
 
         GameObject _winners=  Instantiate(winner_name, new Vector3(0,0,0), Quaternion.identity);
@@ -847,6 +811,29 @@ public class GameManager : MonoBehaviour
     public void Exit(){
         LeaveTable();
         SceneManager.LoadScene(3);
+
+    }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//FUNKCJE TESTOWE
+
+
+     public void AllCards(){
+        for(int i =0; i<8; i++){
+            GameObject playerCard = Instantiate(cards[2], new Vector3(0,0,0), Quaternion.identity);
+            GameObject playerCard2 = Instantiate(cards[2], new Vector3(0,0,0), Quaternion.identity);
+            playerCard.transform.SetParent(user_panels[i].transform,false);
+            playerCard2.transform.SetParent(user_panels[i].transform,false);  
+
+        }
+    }
+
+    public void Tablee(){
+        for(int i=0; i<5; i++){
+            GameObject card = Instantiate(cards[15], new Vector3(0,0,0), Quaternion.identity);
+            card.transform.SetParent(table.transform,false);
+        }
 
     }
 }

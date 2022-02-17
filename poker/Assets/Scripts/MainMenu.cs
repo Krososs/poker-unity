@@ -15,6 +15,7 @@ public class MainMenu : MonoBehaviour
 
     void Start(){
         TableListMenu.token=token;
+        RankingMenu.token=token;
     }
 
     public void RankingScene(){
