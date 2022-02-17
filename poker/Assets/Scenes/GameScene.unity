@@ -591,11 +591,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a29a4d0e3cabd58478eeec0a226aa583, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panel: {fileID: 0}
-  table: {fileID: 1233058817}
-  card1: {fileID: 3928364126286425864, guid: 52e2ea92d75f9fe4fac0e0a548e2924c, type: 3}
-  card2: {fileID: 6128809591840274009, guid: d081b0a63fd05f0459bb60c4df131720, type: 3}
-  myp: {fileID: 0}
 --- !u!1 &178382057
 GameObject:
   m_ObjectHideFlags: 0
@@ -4633,6 +4628,7 @@ MonoBehaviour:
   up_down_button: {fileID: 1907602958}
   all_in_button: {fileID: 1551131575}
   exit_button: {fileID: 8447716352376614314, guid: e5eb9d4f7ce9e7c489593074646a2625, type: 3}
+  leave_button: {fileID: 1266978266}
   timeRemaining: 0
 --- !u!1 &1551131573
 GameObject:

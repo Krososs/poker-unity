@@ -62,6 +62,7 @@ public class GameManager : MonoBehaviour
     public Button up_down_button;
     public Button all_in_button;
     public Button exit_button;
+    public Button leave_button;
 
     Dictionary<int, int> keys = new Dictionary<int, int>();
     
@@ -160,6 +161,7 @@ public class GameManager : MonoBehaviour
         }else{
             ManageButtons(false);
             is_sittng=true;
+            leave_button.interactable=false;
             GameObject.Find("Up/DownButton").GetComponentInChildren<Text>().text = "Get up";
             user_nickname[6].GetComponentInChildren<Text>().text=username;
             user_chips[6].GetComponentInChildren<Text>().text="0";
@@ -592,16 +594,19 @@ public class GameManager : MonoBehaviour
 
     public void Sit(){
         if(is_sittng==true){
-            is_sittng=false;       
+            is_sittng=false;
+            if(status=="READY")SendStatus();       
             StartCoroutine(PostRequest(get_up_adress, PostRequestType.GET_UP));
             status_button.interactable=false;
+            leave_button.interactable=true;
             //Debug.Log("Wstaje");
         }else{
             is_sittng=true;
             //Debug.Log("Siadam");
             Debug.Log(sit_adress);
             StartCoroutine(PostRequest(sit_adress, PostRequestType.SIT)); 
-            status_button.interactable=true;        
+            status_button.interactable=true;
+            leave_button.interactable=false;        
         }
               
     }
@@ -611,29 +616,29 @@ public class GameManager : MonoBehaviour
         Debug.Log(leave_adress);
     }
 
-   void BlindBet(int i,int value, int value2){
-        //Debug.Log("Blind_bet");
+//    void BlindBet(int i,int value, int value2){
+//         //Debug.Log("Blind_bet");
 
-        GameObject bet = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
-        GameObject amount = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
-        GameObject bet2 = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
-        GameObject amount2 = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
+//         GameObject bet = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
+//         GameObject amount = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
+//         GameObject bet2 = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
+//         GameObject amount2 = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
 
-        bet.transform.SetParent(user_bets[keys[i]].transform,false);
-        amount.transform.SetParent(user_bets[keys[i]].transform,false);
-        amount.GetComponent<Text>().text= value.ToString();
+//         bet.transform.SetParent(user_bets[keys[i]].transform,false);
+//         amount.transform.SetParent(user_bets[keys[i]].transform,false);
+//         amount.GetComponent<Text>().text= value.ToString();
   
-        if((i+1)==8){
-            bet2.transform.SetParent(user_bets[0].transform,false);
-            amount2.transform.SetParent(user_bets[0].transform,false);
-            amount2.GetComponent<Text>().text= value2.ToString();
+//         if((i+1)==8){
+//             bet2.transform.SetParent(user_bets[0].transform,false);
+//             amount2.transform.SetParent(user_bets[0].transform,false);
+//             amount2.GetComponent<Text>().text= value2.ToString();
 
-        }else{  
-            bet2.transform.SetParent(user_bets[keys[i+1]].transform,false);
-            amount2.transform.SetParent(user_bets[keys[i+1]].transform,false);
-            amount2.GetComponent<Text>().text= value2.ToString();
-        }
-   }
+//         }else{  
+//             bet2.transform.SetParent(user_bets[keys[i+1]].transform,false);
+//             amount2.transform.SetParent(user_bets[keys[i+1]].transform,false);
+//             amount2.GetComponent<Text>().text= value2.ToString();
+//         }
+//    }
 
    void Bet(int i, int value){
 
