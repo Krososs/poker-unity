@@ -470,13 +470,15 @@ public class GameManager : MonoBehaviour
      
         if(lot!=state["result"]["lot"]){
             lot=state["result"]["lot"];
-            UpdateLot(lot);
+            if(lot>0)UpdateLot(lot);
         }
         
         Array.Clear(colour,0,colour.Length);
         Array.Clear(value,0,value.Length);
 
         if(phase!=state["result"]["game_state"]["current_phase"] && state["result"]["game_state"]["current_phase"]>0 ){
+
+            if(phase==5 && state["result"]["game_state"]["current_phase"] ==1 ) DestroyUserCards();
 
             timeRemaining=state["result"]["game_state"]["time_to_end"];
             DestroyTable();
@@ -508,13 +510,12 @@ public class GameManager : MonoBehaviour
                 user_chips[6].GetComponentInChildren<Text>().text=entry.Value["wallet"]; //portfel
                 user_wallet=entry.Value["wallet"];
                 user_bet=entry.Value["current_bet"];
-                Debug.Log("Mój bet:" + entry.Value["current_bet"]);
+    
                                                          
             }else if(i!=6){
                 keys[j]=i; 
                 user_nickname[i].GetComponentInChildren<Text>().text=entry.Value["username"];               
                 user_chips[i].GetComponentInChildren<Text>().text=entry.Value["wallet"];
-                Debug.Log("Bet gracza"+ entry.Value["username"]+ " "+ entry.Value["current_bet"]);
                 i+=1;
 
             }else{
@@ -528,8 +529,20 @@ public class GameManager : MonoBehaviour
                 Bet(j,entry.Value["current_bet"]);
                 UpdatePool(entry.Value["current_bet"]);               
             }
-            
+            k=0;
+            if(state["result"]["game_state"]["current_phase"]==5 && entry.Key!=user_id && entry.Value["hand_exposed"] && user_panels[keys[j]].transform.childCount==0){
+                Array.Clear(colour,0,colour.Length);
+                Array.Clear(value,0,value.Length);
+                foreach(KeyValuePair<string, JSONNode> card in entry.Value["hand"]){
 
+                    colour[k]=card.Value["colour"];
+                    value[k]=card.Value["value"];
+                    k+=1;
+                }                    
+                DealCards(keys[j],colour, value);
+            }
+            
+            k=0;
             if(state["result"]["game_state"]["current_phase"]==1)
             {
                           
@@ -540,7 +553,7 @@ public class GameManager : MonoBehaviour
                         value[k]=card.Value["value"];
                         k+=1;
                     }
-                    DealCards(colour,value);
+                    DealCards(6,colour,value);
                 }              
             }
         
@@ -548,8 +561,16 @@ public class GameManager : MonoBehaviour
             j+=1;
                                  
         }
-        if(biggest_bet>=user_wallet) all_in_button.interactable=true;
-        else all_in_button.interactable=false;
+        if(biggest_bet>=user_wallet || user_wallet==1) {
+            all_in_button.interactable=true;
+            user_button2.interactable=false;
+            user_button3.interactable=false;
+        }
+        else{
+            all_in_button.interactable=false;
+            user_button2.interactable=true;
+            user_button3.interactable=true;
+        }
 
         if(state["result"]["game_state"]["active_player_id"].ToString()==user_id) ManageButtons(true);
         else ManageButtons(false);
@@ -562,6 +583,7 @@ public class GameManager : MonoBehaviour
 
             foreach(KeyValuePair<string, JSONNode> id in state["result"]["game_state"]["game_result"]["winners"]){
                 Debug.Log(id.Value);
+
                 foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"]){
                     if(id.Value.ToString()==entry.Key ) winners.Add(entry.Value["username"]);
                 }
@@ -570,10 +592,7 @@ public class GameManager : MonoBehaviour
             Debug.Log(state["result"]["game_state"]["game_result"]["winners"]);
          
             HandleWinner(winners, state["result"]["game_state"]["game_result"]["price"]);
-        }
-        
-       
-        
+        }       
         i=0;
         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"]){
             if(state["result"]["game_state"]["current_phase"]>0 && entry.Key ==state["result"]["game_state"]["active_player_id"].ToString() &&state["result"]["game_state"]["current_phase"]!=5 ){ 
@@ -585,10 +604,8 @@ public class GameManager : MonoBehaviour
         }
 
         i=0;   
-         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["spectators"])
-        { 
-            i+=1;                                    
-        }
+        foreach( KeyValuePair<string, JSONNode> entry in state["result"]["spectators"]) i+=1;
+    
         if(state["result"]["game_state"]["active_player_id"].ToString()==user_id && biggest_bet==user_bet && state["result"]["game_state"]["current_phase"]>1){
             GameObject.Find("Call_check_button").GetComponentInChildren<Text>().text = "CHECK";         
         }else{
@@ -597,12 +614,12 @@ public class GameManager : MonoBehaviour
 
         if(state["result"]["game_state"]["current_phase"]==5 && next_round){
             next_round=false; 
-            DestroyMyCards();
             for(int c=0; c<keys.Count; c++) user_panels[keys[c]].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
             status="NOT_READY";
             GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Ready";
-            //user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
             ManageButtons(false);
+            DeleteLot();
+           
         }else next_round=true;
 
         specators_panel.GetComponentInChildren<Text>().text = i.ToString();
@@ -665,6 +682,11 @@ public class GameManager : MonoBehaviour
            DestroyImmediate(bet);
            DestroyImmediate(amount);
        }
+   }
+
+   void DeleteLot(){
+       for(int i=plot_panel.transform.childCount-1; i>=0; i--)
+            DestroyImmediate(plot_panel.transform.GetChild(i).gameObject);
 
    }
 
@@ -712,22 +734,23 @@ public class GameManager : MonoBehaviour
 
   
 
-   public void DestroyMyCards(){ 
-        for(int i=user_panels[6].transform.childCount-1; i>=0; i--){
-            DestroyImmediate(user_panels[6].transform.GetChild(i).gameObject);
-        }
+   public void DestroyUserCards(){
+       for(int c=0; c<8; c++){        
+            for(int i=user_panels[c].transform.childCount-1; i>=0; i--) 
+                DestroyImmediate(user_panels[c].transform.GetChild(i).gameObject);                                         
+       }        
     }
 
 
-   void DealCards(int [] colour, int [] value){
+   void DealCards(int i, int [] colour, int [] value){
         int x= (colour[0]-1) * 13 + (value[0]-2);
         int y= (colour[1]-1) * 13 + (value[1]-2);
         Debug.Log(x);
         Debug.Log(y);
         GameObject playerCard = Instantiate(cards[x], new Vector3(0,0,0), Quaternion.identity);
         GameObject playerCard2 = Instantiate(cards[y], new Vector3(0,0,0), Quaternion.identity);
-        playerCard.transform.SetParent(user_panels[6].transform,false);
-        playerCard2.transform.SetParent(user_panels[6].transform,false);      
+        playerCard.transform.SetParent(user_panels[i].transform,false);
+        playerCard2.transform.SetParent(user_panels[i].transform,false);      
     }
 
     void DestroyTable(){
@@ -772,6 +795,25 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public void AllCards(){
+        for(int i =0; i<8; i++){
+            GameObject playerCard = Instantiate(cards[2], new Vector3(0,0,0), Quaternion.identity);
+            GameObject playerCard2 = Instantiate(cards[2], new Vector3(0,0,0), Quaternion.identity);
+            playerCard.transform.SetParent(user_panels[i].transform,false);
+            playerCard2.transform.SetParent(user_panels[i].transform,false);  
+
+        }
+    }
+
+    public void Tablee(){
+        for(int i=0; i<5; i++){
+            GameObject card = Instantiate(cards[15], new Vector3(0,0,0), Quaternion.identity);
+            card.transform.SetParent(table.transform,false);
+        }
+
+    }
+
+  
     void HandleWinner( List<string> winners, int wallet){
 
         GameObject _winners=  Instantiate(winner_name, new Vector3(0,0,0), Quaternion.identity);
