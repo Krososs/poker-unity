@@ -35,8 +35,22 @@ public class MainMenu : MonoBehaviour
         StartCoroutine(PutRequest(adress));
     }
 
+    void Create_singleplayer_game(){
+        GameManager.user_token=token;
+        GameManager.player=true;
+        string adress= server_adress+"/game/create/singleplayer/4?token="+token;
+        Debug.Log("ADRESS");
+        Debug.Log(adress);
+        StartCoroutine(PutRequest(adress));
+    }
+
     public void GameScene(){
         Create_game();
+    }
+
+    public void Singleplayer(){
+        Create_singleplayer_game();
+
     }
 
     public void Logout(){
@@ -51,7 +65,6 @@ public class MainMenu : MonoBehaviour
         string table_id="";
         int port=0;
 
-        
         foreach(KeyValuePair<string, JSONNode> entry in node["result"]){
 
             if(entry.Key=="tableId"){
