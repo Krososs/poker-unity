@@ -100,6 +100,7 @@ public class GameManager : MonoBehaviour
     private int minimum_raise_value=1;
     private string status="NOT_READY";
     private bool is_sittng=false;
+    private bool next_round=true;
     private int user_bet=0;
     private int lot=0;
     private int phase;
@@ -225,11 +226,15 @@ public class GameManager : MonoBehaviour
     void ProcessSitRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
         Debug.Log(node);
+        Debug.Log("SIT_DOWN_RESPONE");
 
         if(node["valid"]){
             //ManageButtons(true);
             //player=true;
-            status_button.interactable=true;                
+            is_sittng=true;
+            Debug.Log(sit_adress);
+            status_button.interactable=true;
+            leave_button.interactable=false;                
             user_chips[6].GetComponentInChildren<Text>().text="0";
             user_nickname[6].GetComponentInChildren<Text>().text=username;
             //user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.0f);
@@ -241,12 +246,12 @@ public class GameManager : MonoBehaviour
      void ProcessGetUpRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
         Debug.Log(node);
+        Debug.Log("GET_UP_RESPONE");
         if(node["valid"]){
-            //ManageButtons(false);
-            //player=false;
-            status="NOT_READY";
+            is_sittng=false;          
             ManageButtons(false);
             status_button.interactable=false;
+            leave_button.interactable=true;
             GameObject.Find("Up/DownButton").GetComponentInChildren<Text>().text = "Sit";
             GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Ready";
             user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
@@ -267,7 +272,23 @@ public class GameManager : MonoBehaviour
 
     void ProcessStatusRespone(string rawRespone){
         JSONNode node = SimpleJSON.JSON.Parse(rawRespone);
+        Debug.Log("STATUS RESPONE");
         Debug.Log(node);
+        if(node["valid"]){
+            if(status=="READY"){
+                GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Not ready";
+                user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.00f);
+                ManageButtons(true);
+            }else{
+                GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Ready";
+                user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
+                ManageButtons(false);
+            }
+
+        }else{
+            if(status=="READY")status="NOT_READY";
+            else status="READY";
+        }
 
     }
 
@@ -420,15 +441,15 @@ public class GameManager : MonoBehaviour
         string adress=status_adress;
         if(status=="NOT_READY"){
             status="READY";
-            GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Not ready";
-            user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.00f);
-            ManageButtons(true);
+            // GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Not ready";
+            // user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.00f);
+            // ManageButtons(true);
         }
         else{ 
             status="NOT_READY";
-            GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Ready";
-            user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
-            ManageButtons(false);
+            // GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Ready";
+            // user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
+            // ManageButtons(false);
         }
         adress+=status;
         Debug.Log("Status");
@@ -551,17 +572,11 @@ public class GameManager : MonoBehaviour
             HandleWinner(winners, state["result"]["game_state"]["game_result"]["price"]);
         }
         
-        if(state["result"]["game_state"]["current_phase"]==5){ 
-            DestroyMyCards();
-            status="NOT_READY";
-            GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Ready";
-            user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
-            ManageButtons(false);
-        }
+       
         
         i=0;
         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"]){
-            if(state["result"]["game_state"]["current_phase"]>0 && entry.Key ==state["result"]["game_state"]["active_player_id"].ToString()){ 
+            if(state["result"]["game_state"]["current_phase"]>0 && entry.Key ==state["result"]["game_state"]["active_player_id"].ToString() &&state["result"]["game_state"]["current_phase"]!=5 ){ 
                 user_panels[keys[i]].GetComponent<Image>().color= new Color(0.6f,0.6f,1.0f,1.0f);
                 
             }
@@ -580,6 +595,16 @@ public class GameManager : MonoBehaviour
             GameObject.Find("Call_check_button").GetComponentInChildren<Text>().text = "CALL";
         }
 
+        if(state["result"]["game_state"]["current_phase"]==5 && next_round){
+            next_round=false; 
+            DestroyMyCards();
+            for(int c=0; c<keys.Count; c++) user_panels[keys[c]].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
+            status="NOT_READY";
+            GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Ready";
+            //user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
+            ManageButtons(false);
+        }else next_round=true;
+
         specators_panel.GetComponentInChildren<Text>().text = i.ToString();
         phase_panel.GetComponentInChildren<Text>().text = state["result"]["game_state"]["current_phase"];
         message=true;
@@ -594,19 +619,11 @@ public class GameManager : MonoBehaviour
 
     public void Sit(){
         if(is_sittng==true){
-            is_sittng=false;
-            if(status=="READY")SendStatus();       
-            StartCoroutine(PostRequest(get_up_adress, PostRequestType.GET_UP));
-            status_button.interactable=false;
-            leave_button.interactable=true;
-            //Debug.Log("Wstaje");
-        }else{
-            is_sittng=true;
-            //Debug.Log("Siadam");
-            Debug.Log(sit_adress);
-            StartCoroutine(PostRequest(sit_adress, PostRequestType.SIT)); 
-            status_button.interactable=true;
-            leave_button.interactable=false;        
+            if(status=="READY")SendStatus();                
+            StartCoroutine(PostRequest(get_up_adress, PostRequestType.GET_UP));        
+            
+        }else{           
+            StartCoroutine(PostRequest(sit_adress, PostRequestType.SIT));                 
         }
               
     }
@@ -615,30 +632,6 @@ public class GameManager : MonoBehaviour
         StartCoroutine(PostRequest(leave_adress,PostRequestType.LEAVE));
         Debug.Log(leave_adress);
     }
-
-//    void BlindBet(int i,int value, int value2){
-//         //Debug.Log("Blind_bet");
-
-//         GameObject bet = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
-//         GameObject amount = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
-//         GameObject bet2 = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
-//         GameObject amount2 = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
-
-//         bet.transform.SetParent(user_bets[keys[i]].transform,false);
-//         amount.transform.SetParent(user_bets[keys[i]].transform,false);
-//         amount.GetComponent<Text>().text= value.ToString();
-  
-//         if((i+1)==8){
-//             bet2.transform.SetParent(user_bets[0].transform,false);
-//             amount2.transform.SetParent(user_bets[0].transform,false);
-//             amount2.GetComponent<Text>().text= value2.ToString();
-
-//         }else{  
-//             bet2.transform.SetParent(user_bets[keys[i+1]].transform,false);
-//             amount2.transform.SetParent(user_bets[keys[i+1]].transform,false);
-//             amount2.GetComponent<Text>().text= value2.ToString();
-//         }
-//    }
 
    void Bet(int i, int value){
 
@@ -796,17 +789,15 @@ public class GameManager : MonoBehaviour
             _winner.transform.SetParent(winner_panel.transform,false);
         }
 
-
         data.GetComponent<Text>().text="Prize: "+wallet.ToString();
         data.transform.SetParent(winner_panel.transform,false);
 
         button.transform.SetParent(winner_panel.transform,false);
         button.onClick.AddListener(Exit);
-
-
-
     }
+
     public void Exit(){
+        LeaveTable();
         SceneManager.LoadScene(3);
 
     }
