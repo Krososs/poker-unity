@@ -561,19 +561,25 @@ public class GameManager : MonoBehaviour
             j+=1;
                                  
         }
-        if(biggest_bet>=user_wallet || user_wallet==1) {
+        Debug.Log("BIGGEST_BET "+biggest_bet);
+        Debug.Log("USER_WALLET "+user_wallet);
+
+        if(state["result"]["game_state"]["active_player_id"].ToString()==user_id) ManageButtons(true);
+        else ManageButtons(false);
+
+        if(((biggest_bet-user_bet>=user_wallet) || user_wallet==1) && state["result"]["game_state"]["active_player_id"].ToString()==user_id) {
+            Debug.Log("Wyłączam przyciski");
             all_in_button.interactable=true;
             user_button2.interactable=false;
             user_button3.interactable=false;
-        }
-        else{
+        }else{
+            Debug.Log("Włączam przyciski");       
             all_in_button.interactable=false;
             user_button2.interactable=true;
             user_button3.interactable=true;
         }
 
-        if(state["result"]["game_state"]["active_player_id"].ToString()==user_id) ManageButtons(true);
-        else ManageButtons(false);
+        
 
         if(state["result"]["game_state"]["current_phase"]==6){
             List<string> winners = new List<string>(); 
