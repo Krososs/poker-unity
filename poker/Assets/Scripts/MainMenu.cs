@@ -7,15 +7,28 @@ using UnityEngine.UI;
 using SimpleJSON;
 using System.Text;
 using System.Linq;
+using UnityEngine.Localization.Settings;
+using UnityEngine.Localization;
 
 public class MainMenu : MonoBehaviour
 {
     public static string token;
     public static string server_adress="vps.damol.pl:4000";
+    public int choosen_language=0; //eng
+    public int iterator=0;
 
     void Start(){
         TableListMenu.token=token;
         RankingMenu.token=token;
+    }
+
+    void Update(){
+       
+       
+            
+
+        
+        
     }
 
     public void RankingScene(){
@@ -42,6 +55,43 @@ public class MainMenu : MonoBehaviour
         Debug.Log("ADRESS");
         Debug.Log(adress);
         StartCoroutine(PutRequest(adress));
+    }
+
+    public void ChangeLanguage(){
+        if(GameObject.Find("LanguageButton").GetComponentInChildren<Text>().text=="PL"){
+            
+            GameObject.Find("LanguageButton").GetComponentInChildren<Text>().text="EN";
+            choosen_language=1;
+             StartCoroutine(Change());
+        }
+        else{
+            
+            GameObject.Find("LanguageButton").GetComponentInChildren<Text>().text="PL";
+            choosen_language=0;
+             StartCoroutine(Change());
+        }
+
+    }
+
+    IEnumerator Change(){
+        //List<Locale> locales = new List<Locale>();
+        Debug.Log("Szukam zamiany");
+        yield return LocalizationSettings.InitializationOperation;
+ 
+        if (LocalizationSettings.InitializationOperation.IsDone)
+        {
+            int selected = 0;
+            for (int i = 0; i < LocalizationSettings.AvailableLocales.Locales.Count; ++i)
+            {   
+                Debug.Log(i);
+                var locale = LocalizationSettings.AvailableLocales.Locales[i];
+                if(i==choosen_language) 
+                    LocalizationSettings.SelectedLocale = locale;
+                print("L :" + locale);
+            }   
+        }
+        
+
     }
 
     public void GameScene(){

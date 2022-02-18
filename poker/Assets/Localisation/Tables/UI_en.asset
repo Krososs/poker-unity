@@ -1,0 +1,157 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 6f1ff204be4b79b41a57bc44e7112803, type: 2}
+  m_Metadata:
+    m_Items:
+    - id: 0
+  m_TableData:
+  - m_Id: 91868954624
+    m_Localized: Login
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 1025533607936
+    m_Localized: Register
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 1244337864704
+    m_Localized: Exit
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 1335681417216
+    m_Localized: Back
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 1605433884672
+    m_Localized: Username
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 1681615028224
+    m_Localized: Password
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 6248012513280
+    m_Localized: Repeat password
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 7638113910784
+    m_Localized: Singleplayer
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 7764190494720
+    m_Localized: Create game
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 7908139008000
+    m_Localized: Table list
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 7990632579072
+    m_Localized: Logout
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 10479977168896
+    m_Localized: 'Spectators:'
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 10634180755456
+    m_Localized: 'Time to end:'
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 10743257825280
+    m_Localized: 'Phase:'
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 14521692389376
+    m_Localized: Ready
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 14543574073344
+    m_Localized: Not ready
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 18403818536960
+    m_Localized: Sit
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 18417710071808
+    m_Localized: Get up
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 18555828502528
+    m_Localized: Fold
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 18588330164224
+    m_Localized: Check
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 18652561735680
+    m_Localized: Call
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 18708140457984
+    m_Localized: Raise
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 20185835700224
+    m_Localized: Leave game
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 21260764512256
+    m_Localized: 'Winners:'
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 21321548365824
+    m_Localized: 'Prize:'
+    m_Metadata:
+      m_Items:
+      - id: 0
+  - m_Id: 3110887030784
+    m_Localized: 
+    m_Metadata:
+      m_Items:
+      - id: 0
+  references:
+    version: 1
+    00000000:
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 0000d16315000000000091c6ee000000000051b8210100000000d1fc36010000000051cb7501000000001188870100000000514fd4020000000091baae05000000001163f20600000000d1bd0f0700000000d141310700000000d176440700000000510f88090000000091f6ab0900000000115cc509000000005118350d0000000091303a0d0000000011f9bc10000000001135c01000000000915de01000000000d1eee7100000000051e3f6100000000011d403110000000091e15b12000000005128561300000000514f64130000
