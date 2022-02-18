@@ -6,6 +6,7 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using System.Linq;
 using SimpleJSON;
+using UnityEngine.Localization.Settings;
 
 public class RankingMenu : MonoBehaviour
 {
@@ -22,10 +23,8 @@ public class RankingMenu : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("Szukam rankingu");
         string adress= server_adress+"/ranking?token="+token;
-        StartCoroutine(GetRequest(adress)); 
-        
+        StartCoroutine(GetRequest(adress));     
     }
 
     // Update is called once per frame
@@ -56,7 +55,7 @@ public class RankingMenu : MonoBehaviour
                 GameObject panel = Instantiate(user_panel, new Vector3(0,0,0), Quaternion.identity);
 
                 user.transform.SetParent(panel.transform,false);
-                user.GetComponent<Text>().text = i.ToString()+". "+entry.Value["username"]+" Total score: "+ entry.Value["total_score"];
+                user.GetComponent<Text>().text = i.ToString()+". "+entry.Value["username"]+" "+LocalizationSettings.StringDatabase.GetLocalizedString("UI", "total_score")+" "+ entry.Value["total_score"];
                 panel.transform.SetParent(scrollview.transform,false);
                 i+=1;
 

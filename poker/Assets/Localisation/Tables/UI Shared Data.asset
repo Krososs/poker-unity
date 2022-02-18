@@ -119,6 +119,14 @@ MonoBehaviour:
     m_Key: prize
     m_Metadata:
       m_Items: []
+  - m_Id: 64015628828672
+    m_Key: players
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64062135271424
+    m_Key: total_score
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

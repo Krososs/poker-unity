@@ -149,6 +149,14 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - id: 0
+  - m_Id: 64015628828672
+    m_Localized: Gracze
+    m_Metadata:
+      m_Items: []
+  - m_Id: 64062135271424
+    m_Localized: "Ca\u0142kowity wynik:"
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

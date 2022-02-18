@@ -94,16 +94,6 @@ public class GameManager : MonoBehaviour
     public static string table_id;
     public static string user_id;
     public static string port;
-
-    // public string localized_ready = LocalizationSettings.StringDatabase.GetLocalizedString("UI", "ready");
-    // public string localized_not_ready = LocalizationSettings.StringDatabase.GetLocalizedString("UI", "not_ready");
-
-    // public string localized_sit = LocalizationSettings.StringDatabase.GetLocalizedString("UI", "sit");
-    // public string localized_get_up = LocalizationSettings.StringDatabase.GetLocalizedString("UI", "get_up");
-
-    // public string localized_call= LocalizationSettings.StringDatabase.GetLocalizedString("UI", "call");
-    // public string localized_check= LocalizationSettings.StringDatabase.GetLocalizedString("UI", "check");
-
     private int raise_amount=1;
     private string raise_value; // variable sent to raise request
     private int biggest_bet=0;
@@ -161,7 +151,7 @@ public class GameManager : MonoBehaviour
 
         SetupWebSocket();
         InitiateObjects();
-        all_in_button.interactable=false;
+        //all_in_button.interactable=false;
         raise_input_field.text=raise_amount.ToString();
         phase=-1;
         
@@ -441,6 +431,7 @@ public class GameManager : MonoBehaviour
         user_button1.interactable=o;
         user_button2.interactable=o;
         user_button3.interactable=o;
+        all_in_button.interactable=o;
     }
 
     public void GetState(){
@@ -575,17 +566,17 @@ public class GameManager : MonoBehaviour
         if(state["result"]["game_state"]["active_player_id"].ToString()==user_id) ManageButtons(true);
         else ManageButtons(false);
 
-        if(((biggest_bet-user_bet>=user_wallet) || user_wallet==1) && state["result"]["game_state"]["active_player_id"].ToString()==user_id) {
-            Debug.Log("Wyłączam przyciski");
-            all_in_button.interactable=true;
-            user_button2.interactable=false;
-            user_button3.interactable=false;
-        }else{
-            Debug.Log("Włączam przyciski");       
-            all_in_button.interactable=false;
-            user_button2.interactable=true;
-            user_button3.interactable=true;
-        }
+        // if(((biggest_bet-user_bet>=user_wallet) || user_wallet==1) && state["result"]["game_state"]["active_player_id"].ToString()==user_id) {
+        //     Debug.Log("Wyłączam przyciski");
+        //     all_in_button.interactable=true;
+        //     user_button2.interactable=false;
+        //     user_button3.interactable=false;
+        // }else{
+        //     Debug.Log("Włączam przyciski");       
+        //     all_in_button.interactable=false;
+        //     user_button2.interactable=true;
+        //     user_button3.interactable=true;
+        // }
 
         
 
