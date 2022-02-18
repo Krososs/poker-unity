@@ -9,7 +9,6 @@ using SimpleJSON;
 using UnityEngine.SceneManagement;
 using System.Text;
 using NativeWebSocket;
-using UnityEngine.Localization.Settings;
 
 
 public class GameManager : MonoBehaviour
@@ -94,6 +93,7 @@ public class GameManager : MonoBehaviour
     public static string table_id;
     public static string user_id;
     public static string port;
+
     private int raise_amount=1;
     private string raise_value; // variable sent to raise request
     private int biggest_bet=0;
@@ -151,7 +151,7 @@ public class GameManager : MonoBehaviour
 
         SetupWebSocket();
         InitiateObjects();
-        //all_in_button.interactable=false;
+        all_in_button.interactable=false;
         raise_input_field.text=raise_amount.ToString();
         phase=-1;
         
@@ -163,7 +163,7 @@ public class GameManager : MonoBehaviour
             ManageButtons(false);
             is_sittng=true;
             leave_button.interactable=false;
-            GameObject.Find("Up/DownButton").GetComponentInChildren<Text>().text = LocalizationSettings.StringDatabase.GetLocalizedString("UI", "get_up");
+            GameObject.Find("Up/DownButton").GetComponentInChildren<Text>().text = "Get up";
             user_nickname[6].GetComponentInChildren<Text>().text=username;
             user_chips[6].GetComponentInChildren<Text>().text="0";
             
@@ -238,7 +238,7 @@ public class GameManager : MonoBehaviour
             user_chips[6].GetComponentInChildren<Text>().text="0";
             user_nickname[6].GetComponentInChildren<Text>().text=username;
             //user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.0f);
-            GameObject.Find("Up/DownButton").GetComponentInChildren<Text>().text = LocalizationSettings.StringDatabase.GetLocalizedString("UI", "get_up");
+            GameObject.Find("Up/DownButton").GetComponentInChildren<Text>().text = "Get up";
 
         }
 
@@ -252,8 +252,8 @@ public class GameManager : MonoBehaviour
             ManageButtons(false);
             status_button.interactable=false;
             leave_button.interactable=true;
-            GameObject.Find("Up/DownButton").GetComponentInChildren<Text>().text = LocalizationSettings.StringDatabase.GetLocalizedString("UI", "sit");
-            GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = LocalizationSettings.StringDatabase.GetLocalizedString("UI", "ready");
+            GameObject.Find("Up/DownButton").GetComponentInChildren<Text>().text = "Sit";
+            GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Ready";
             user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
             user_nickname[6].GetComponentInChildren<Text>().text = "";
             user_chips[6].GetComponentInChildren<Text>().text = "";
@@ -276,11 +276,11 @@ public class GameManager : MonoBehaviour
         Debug.Log(node);
         if(node["valid"]){
             if(status=="READY"){
-                GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = LocalizationSettings.StringDatabase.GetLocalizedString("UI", "not_ready");
+                GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Not ready";
                 user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.00f);
                 ManageButtons(true);
             }else{
-                GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = LocalizationSettings.StringDatabase.GetLocalizedString("UI", "ready");
+                GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Ready";
                 user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
                 ManageButtons(false);
             }
@@ -431,7 +431,6 @@ public class GameManager : MonoBehaviour
         user_button1.interactable=o;
         user_button2.interactable=o;
         user_button3.interactable=o;
-        all_in_button.interactable=o;
     }
 
     public void GetState(){
@@ -566,17 +565,17 @@ public class GameManager : MonoBehaviour
         if(state["result"]["game_state"]["active_player_id"].ToString()==user_id) ManageButtons(true);
         else ManageButtons(false);
 
-        // if(((biggest_bet-user_bet>=user_wallet) || user_wallet==1) && state["result"]["game_state"]["active_player_id"].ToString()==user_id) {
-        //     Debug.Log("Wyłączam przyciski");
-        //     all_in_button.interactable=true;
-        //     user_button2.interactable=false;
-        //     user_button3.interactable=false;
-        // }else{
-        //     Debug.Log("Włączam przyciski");       
-        //     all_in_button.interactable=false;
-        //     user_button2.interactable=true;
-        //     user_button3.interactable=true;
-        // }
+        if(((biggest_bet-user_bet>=user_wallet) || user_wallet==1) && state["result"]["game_state"]["active_player_id"].ToString()==user_id) {
+            Debug.Log("Wyłączam przyciski");
+            all_in_button.interactable=true;
+            user_button2.interactable=false;
+            user_button3.interactable=false;
+        }else{
+            Debug.Log("Włączam przyciski");       
+            all_in_button.interactable=false;
+            user_button2.interactable=true;
+            user_button3.interactable=true;
+        }
 
         
 
@@ -612,16 +611,16 @@ public class GameManager : MonoBehaviour
         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["spectators"]) i+=1;
     
         if(state["result"]["game_state"]["active_player_id"].ToString()==user_id && biggest_bet==user_bet && state["result"]["game_state"]["current_phase"]>1){
-            GameObject.Find("Call_check_button").GetComponentInChildren<Text>().text = LocalizationSettings.StringDatabase.GetLocalizedString("UI", "check");         
+            GameObject.Find("Call_check_button").GetComponentInChildren<Text>().text = "CHECK";         
         }else{
-            GameObject.Find("Call_check_button").GetComponentInChildren<Text>().text = LocalizationSettings.StringDatabase.GetLocalizedString("UI", "call");
+            GameObject.Find("Call_check_button").GetComponentInChildren<Text>().text = "CALL";
         }
 
         if(state["result"]["game_state"]["current_phase"]==5 && next_round){
             next_round=false; 
             for(int c=0; c<keys.Count; c++) user_panels[keys[c]].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
             status="NOT_READY";
-            GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = LocalizationSettings.StringDatabase.GetLocalizedString("UI", "ready");
+            GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Ready";
             ManageButtons(false);
             DeleteLot();
            
@@ -714,7 +713,7 @@ public class GameManager : MonoBehaviour
    }
 
    public void Call(){
-       if(GameObject.Find("Call_check_button").GetComponentInChildren<Text>().text==LocalizationSettings.StringDatabase.GetLocalizedString("UI", "check"))
+       if(GameObject.Find("Call_check_button").GetComponentInChildren<Text>().text=="CHECK")
        StartCoroutine(PostRequest(check_adress,PostRequestType.CHECK));
        else  StartCoroutine(PostRequest(call_adress,PostRequestType.CALL));        
    }
@@ -793,7 +792,7 @@ public class GameManager : MonoBehaviour
 
         winner_panel.GetComponent<Image>().color= new Color(0.86f,0.62f,0.05f,0.9f);
 
-        _winners.GetComponent<Text>().text=LocalizationSettings.StringDatabase.GetLocalizedString("UI", "winners");
+        _winners.GetComponent<Text>().text="Winners:";
         _winners.transform.SetParent(winner_panel.transform,false);
 
         foreach(string winner in winners){
@@ -802,7 +801,7 @@ public class GameManager : MonoBehaviour
             _winner.transform.SetParent(winner_panel.transform,false);
         }
 
-        data.GetComponent<Text>().text=LocalizationSettings.StringDatabase.GetLocalizedString("UI", "prize")+" "+wallet.ToString();
+        data.GetComponent<Text>().text="Prize: "+wallet.ToString();
         data.transform.SetParent(winner_panel.transform,false);
 
         button.transform.SetParent(winner_panel.transform,false);
