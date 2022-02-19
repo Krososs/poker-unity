@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Localization.Settings;
+using UnityEngine.Localization;
+
+//using UnityEngine.LocaleIdentifier;
 
 public class BasicMenu : MonoBehaviour
 {
@@ -15,9 +19,12 @@ public class BasicMenu : MonoBehaviour
         TableListMenu.server_adress=server_adress;
         //ListScene.server_adress=server_adress;
         LoginMenu.server_adress=server_adress;
-        
+
+       
+           
 
     }
+
     public void LoginScene(){
         SceneManager.LoadScene(1);       
     }

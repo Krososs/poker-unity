@@ -6,6 +6,7 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using System.Linq;
 using SimpleJSON;
+using UnityEngine.Localization.Settings;
 
 public class TableListMenu : MonoBehaviour
 {
@@ -66,7 +67,7 @@ public class TableListMenu : MonoBehaviour
             id.GetComponent<Text>().text = entry.Key;
 
             players.transform.SetParent(panel.transform,false);
-            players.GetComponent<Text>().text = "Playes: "+entry.Value["number_of_players"];
+            players.GetComponent<Text>().text = LocalizationSettings.StringDatabase.GetLocalizedString("UI", "players")+" "+entry.Value["number_of_players"];
 
             port.transform.SetParent(panel.transform,false);
             port.GetComponent<Text>().text = entry.Value["socket_port"];
