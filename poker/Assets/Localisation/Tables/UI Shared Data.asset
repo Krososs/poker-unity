@@ -127,6 +127,18 @@ MonoBehaviour:
     m_Key: total_score
     m_Metadata:
       m_Items: []
+  - m_Id: 332491756994560
+    m_Key: login_form
+    m_Metadata:
+      m_Items: []
+  - m_Id: 332726319251456
+    m_Key: register_form
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333684885487616
+    m_Key: table_lis
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

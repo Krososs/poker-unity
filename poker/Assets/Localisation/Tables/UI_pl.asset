@@ -157,6 +157,18 @@ MonoBehaviour:
     m_Localized: "Ca\u0142kowity wynik:"
     m_Metadata:
       m_Items: []
+  - m_Id: 332491756994560
+    m_Localized: Logowanie
+    m_Metadata:
+      m_Items: []
+  - m_Id: 332726319251456
+    m_Localized: Rejestracja
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333684885487616
+    m_Localized: "Lista sto\u0142\xF3w"
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:

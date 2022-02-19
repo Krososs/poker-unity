@@ -157,6 +157,18 @@ MonoBehaviour:
     m_Localized: 'Total score:'
     m_Metadata:
       m_Items: []
+  - m_Id: 332491756994560
+    m_Localized: Login form
+    m_Metadata:
+      m_Items: []
+  - m_Id: 332726319251456
+    m_Localized: Register form
+    m_Metadata:
+      m_Items: []
+  - m_Id: 333684885487616
+    m_Localized: Table list
+    m_Metadata:
+      m_Items: []
   references:
     version: 1
     00000000:
