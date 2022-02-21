@@ -640,7 +640,7 @@ public class GameManager : MonoBehaviour
 
     public void Sit(){
         if(is_sittng==true){
-            if(status=="READY")SendStatus();                
+            //if(status=="READY")SendStatus();                
             StartCoroutine(PostRequest(get_up_adress, PostRequestType.GET_UP));        
             
         }else{           
