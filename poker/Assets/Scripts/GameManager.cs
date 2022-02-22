@@ -64,13 +64,7 @@ public class GameManager : MonoBehaviour
     public Button all_in_button;
     public Button exit_button;
     public Button leave_button;
-
     Dictionary<int, int> keys = new Dictionary<int, int>();
-    
-    // public Image small_bet_image;
-    // public Image medium_bet_image;
-    // public Image big_bet_image;
-    // public Image empty_image;
 
 //ADDRESSES
     public static string server_adress="vps.damol.pl:4000";
@@ -101,11 +95,15 @@ public class GameManager : MonoBehaviour
     private string status="NOT_READY";
     private bool is_sittng=false;
     private bool next_round=true;
+    private bool get_state=true;
     private int user_bet=0;
     private int lot=0;
     private int phase;
     private int user_wallet;
+    private int players=0;
     public float timeRemaining=0;
+    public int timer=3;
+
 
     public static bool player;
     public static GameManager Instance;
@@ -174,6 +172,7 @@ public class GameManager : MonoBehaviour
     void Update() {
 
         if(timeRemaining>0){
+            int time = (int) Math.Round(timeRemaining);
             timeRemaining-=Time.deltaTime;
             DisplayTime(timeRemaining);
         }
@@ -441,16 +440,10 @@ public class GameManager : MonoBehaviour
     public void SendStatus(){
         string adress=status_adress;
         if(status=="NOT_READY"){
-            status="READY";
-            // GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Not ready";
-            // user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,1.00f);
-            // ManageButtons(true);
+            status="READY";         
         }
         else{ 
-            status="NOT_READY";
-            // GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = "Ready";
-            // user_panels[6].GetComponent<Image>().color= new Color(1.0f,1.0f,1.0f,0.55f);
-            // ManageButtons(false);
+            status="NOT_READY";       
         }
         adress+=status;
         Debug.Log("Status");
@@ -465,7 +458,8 @@ public class GameManager : MonoBehaviour
         int j=0; //indeks kolejności graczy
         int k =0;
         int [] colour = new int[5];
-        int [] value = new int[5];  
+        int [] value = new int[5];
+        int _players=0;  
         Debug.Log("GAME STATE");
         Debug.Log(state);
      
@@ -493,7 +487,8 @@ public class GameManager : MonoBehaviour
             }            
             if (k>=2) ShowTable(colour,value,k); //w każdej rundzie?
         }
-        timeRemaining=state["result"]["game_state"]["time_to_end"];
+        if(state["result"]["game_state"]["time_to_end"]==30)
+            timeRemaining=state["result"]["game_state"]["time_to_end"];
         k=0;
         Array.Clear(colour,0,colour.Length);
         Array.Clear(value,0,value.Length);
@@ -502,12 +497,26 @@ public class GameManager : MonoBehaviour
             DestroyPool();
             pool_panel.GetComponentInChildren<Text>().text=lot.ToString();       
         }
-              
+
+        foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"]){
+            _players++;
+        }
+
+        if(_players!=players){
+            players=_players;
+
+            for(int p=0; p<8; p++){
+                user_nickname[p].GetComponentInChildren<Text>().text="";            
+                user_chips[p].GetComponentInChildren<Text>().text="";
+            }
+        }
+           
         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"])
         {   
             
             if(entry.Key==user_id){
-                keys[j]=6;                
+                keys[j]=6;
+                user_nickname[6].GetComponentInChildren<Text>().text=entry.Value["username"];                 
                 user_chips[6].GetComponentInChildren<Text>().text=entry.Value["wallet"]; //portfel
                 user_wallet=entry.Value["wallet"];
                 user_bet=entry.Value["current_bet"];
@@ -566,20 +575,7 @@ public class GameManager : MonoBehaviour
         if(state["result"]["game_state"]["active_player_id"].ToString()==user_id) ManageButtons(true);
         else ManageButtons(false);
 
-        // if(((biggest_bet-user_bet>=user_wallet) || user_wallet==1) && state["result"]["game_state"]["active_player_id"].ToString()==user_id) {
-        //     Debug.Log("Wyłączam przyciski");
-        //     all_in_button.interactable=true;
-        //     user_button2.interactable=false;
-        //     user_button3.interactable=false;
-        // }else{
-        //     Debug.Log("Włączam przyciski");       
-        //     all_in_button.interactable=false;
-        //     user_button2.interactable=true;
-        //     user_button3.interactable=true;
-        // }
-
-        
-
+       
         if(state["result"]["game_state"]["current_phase"]==6){
             List<string> winners = new List<string>(); 
             
@@ -634,7 +630,17 @@ public class GameManager : MonoBehaviour
 
     void DisplayTime(float time){
         time+=1;
+        
         float second = Mathf.FloorToInt(time % 60);
+        int _time = (int) Math.Round(second);
+         if((30-timer)==_time && get_state ){
+             timer+=4;
+             GetState();
+             get_state=false;
+        }else get_state=true;
+
+        if(_time==0) timer=3;
+              
         time_to_end_panel.GetComponentInChildren<Text>().text = second.ToString();
     }
 
@@ -654,8 +660,6 @@ public class GameManager : MonoBehaviour
     }
 
    void Bet(int i, int value){
-
-        //Debug.Log("Standard bet");
         GameObject bet = Instantiate(small_bet, new Vector3(0,0,0), Quaternion.identity);
         GameObject amount = Instantiate(bet_amount, new Vector3(0,0,0), Quaternion.identity);
 
@@ -666,7 +670,6 @@ public class GameManager : MonoBehaviour
 
         }else{
             string current_bet =user_bets[keys[i]].GetComponentInChildren<Text>().text;
-            //value+= Int16.Parse(current_bet);
             user_bets[keys[i]].GetComponentInChildren<Text>().text=value.ToString();
             DestroyImmediate(bet);
             DestroyImmediate(amount);
