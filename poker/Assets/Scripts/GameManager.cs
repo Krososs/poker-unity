@@ -127,7 +127,6 @@ public class GameManager : MonoBehaviour
 
     }
 
-
     enum PostRequestType{
         SIT,
         GET_UP,
@@ -598,27 +597,21 @@ public class GameManager : MonoBehaviour
         else ManageButtons(false);
 
        
-        if(state["result"]["game_state"]["current_phase"]==6){
+        if(state["result"]["game_state"]["current_phase"]==6 && winner_panel.transform.childCount==0){
             List<string> winners = new List<string>(); 
             
-            Debug.Log("TABLICA WINNERS");
-            Debug.Log("Indeksy w pętli");
-
             foreach(KeyValuePair<string, JSONNode> id in state["result"]["game_state"]["game_result"]["winners"]){
                 Debug.Log(id.Value);
 
                 foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"]){
-                    if(id.Value.ToString()==entry.Key ) winners.Add(entry.Value["username"]);
+                    if(string.Compare(entry.Key, id.Value)==0) winners.Add(entry.Value["username"]);
                 }
-            }
-            Debug.Log("Cała tablica");
-            Debug.Log(state["result"]["game_state"]["game_result"]["winners"]);
-         
+            }        
             HandleWinner(winners, state["result"]["game_state"]["game_result"]["price"]);
         }       
         i=0;
         foreach( KeyValuePair<string, JSONNode> entry in state["result"]["players"]){
-            if(state["result"]["game_state"]["current_phase"]>0 && entry.Key ==state["result"]["game_state"]["active_player_id"].ToString() &&state["result"]["game_state"]["current_phase"]!=5 ){ 
+            if(state["result"]["game_state"]["current_phase"]>0 && (string.Compare(entry.Key, state["result"]["game_state"]["active_player_id"])==0) &&state["result"]["game_state"]["current_phase"]!=5 ){ 
                 user_panels[keys[i]].GetComponent<Image>().color= new Color(0.6f,0.6f,1.0f,1.0f);
                 
             }
@@ -826,7 +819,7 @@ public class GameManager : MonoBehaviour
         GameObject data =  Instantiate(winner_data, new Vector3(0,0,0), Quaternion.identity);
         Button button =  Instantiate(exit_button, new Vector3(0,0,0), Quaternion.identity);
 
-        winner_panel.GetComponent<Image>().color= new Color(0.86f,0.62f,0.05f,0.9f);
+        winner_panel.GetComponent<Image>().color= new Color(1.0f,0.95f,0.68f,0.53f);
 
         _winners.GetComponent<Text>().text=LocalizationSettings.StringDatabase.GetLocalizedString("UI", "winners");
         _winners.transform.SetParent(winner_panel.transform,false);
