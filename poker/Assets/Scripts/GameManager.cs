@@ -50,6 +50,10 @@ public class GameManager : MonoBehaviour
 
     public GameObject winner_panel;
 
+    public GameObject round_winner_panel;
+    public GameObject winner_data_panel; //pnel with nickname + prize + card combination
+    public GameObject winner_data_text; 
+
     public GameObject winner_name;
     public GameObject winner_data;
 
@@ -107,6 +111,21 @@ public class GameManager : MonoBehaviour
 
     public static bool player;
     public static GameManager Instance;
+
+    public struct RoundWinner
+    {
+        public string username;
+        public List<int> colour;
+        public List<int> value;
+
+        public RoundWinner(string _username, List<int> _colour, List<int> _value)
+        {   
+            colour = new List<int>(_colour);
+            value = new List<int>(_value);
+            username= _username;    
+        }
+
+    }
 
 
     enum PostRequestType{
@@ -473,7 +492,10 @@ public class GameManager : MonoBehaviour
 
         if(phase!=state["result"]["game_state"]["current_phase"] && state["result"]["game_state"]["current_phase"]>0 ){
 
-            if(phase==5 && state["result"]["game_state"]["current_phase"] ==1 ) DestroyUserCards();
+            if(phase==5 && state["result"]["game_state"]["current_phase"] ==1 ){
+                DestroyUserCards();
+                ClearRoundWinnerPanel();
+            }
 
             timeRemaining=state["result"]["game_state"]["time_to_end"];
             DestroyTable();
@@ -605,7 +627,10 @@ public class GameManager : MonoBehaviour
         }
 
         i=0;   
-        foreach( KeyValuePair<string, JSONNode> entry in state["result"]["spectators"]) i+=1;
+        foreach( KeyValuePair<string, JSONNode> entry in state["result"]["spectators"]){
+             i+=1;
+             if(entry.Key==user_id) leave_button.interactable=true;
+        }
     
         if(state["result"]["game_state"]["active_player_id"].ToString()==user_id && biggest_bet==user_bet && state["result"]["game_state"]["current_phase"]>1){
             GameObject.Find("Call_check_button").GetComponentInChildren<Text>().text = LocalizationSettings.StringDatabase.GetLocalizedString("UI", "check");         
@@ -620,6 +645,13 @@ public class GameManager : MonoBehaviour
             GameObject.Find("StatusButton").GetComponentInChildren<Text>().text = LocalizationSettings.StringDatabase.GetLocalizedString("UI", "ready");
             ManageButtons(false);
             DeleteLot();
+            if(round_winner_panel.transform.childCount==0)
+                HandleRoundWinner(state);
+
+            foreach( KeyValuePair<string, JSONNode> winner in state["result"]["game_state"]["game_result"]["players"]){
+                Debug.Log(winner.Key);
+                Debug.Log(winner.Value);
+            }
            
         }else next_round=true;
         specators_panel.GetComponentInChildren<Text>().text = i.ToString();
@@ -742,10 +774,9 @@ public class GameManager : MonoBehaviour
             for(int i=user_panels[c].transform.childCount-1; i>=0; i--) 
                 DestroyImmediate(user_panels[c].transform.GetChild(i).gameObject);                                         
        }        
-    }
+   }
 
-
-   void DealCards(int i, int [] colour, int [] value){
+    void DealCards(int i, int [] colour, int [] value){
         int x= (colour[0]-1) * 13 + (value[0]-2);
         int y= (colour[1]-1) * 13 + (value[1]-2);
         Debug.Log(x);
@@ -754,7 +785,8 @@ public class GameManager : MonoBehaviour
         GameObject playerCard2 = Instantiate(cards[y], new Vector3(0,0,0), Quaternion.identity);
         playerCard.transform.SetParent(user_panels[i].transform,false);
         playerCard2.transform.SetParent(user_panels[i].transform,false);      
-    }
+     }
+
 
     void DestroyTable(){
         for(int i=table.transform.childCount-1; i>=0; i--){
@@ -810,6 +842,128 @@ public class GameManager : MonoBehaviour
 
         button.transform.SetParent(winner_panel.transform,false);
         button.onClick.AddListener(Exit);
+    }
+
+    void HandleRoundWinner(JSONNode state ){
+        string _username ="";
+        bool is_winner=false;
+        List<int> colour;
+        List<int> value;
+        List<RoundWinner> winners = new List<RoundWinner>();
+        
+        foreach( KeyValuePair<string, JSONNode> winner in state["result"]["game_state"]["game_result"]["players"]){
+            colour= new List<int>();
+            value= new List<int>();
+            Debug.Log(winner.Key);
+            Debug.Log(winner.Value);
+
+            Debug.Log("WINNERS TABLE");
+            foreach(KeyValuePair<string, JSONNode> ks in state["result"]["game_state"]["game_result"]["winners"]){
+                Debug.Log(ks);
+                Debug.Log(ks.Key);
+                Debug.Log(ks.Value);
+                if(winner.Key.ToString()==ks.Value) is_winner=true;
+
+            }
+
+            if(is_winner){
+
+                foreach(KeyValuePair<string, JSONNode> entry in state["result"]["players"]){
+                    if(winner.Key==entry.Key){
+                        _username =entry.Value["username"];
+                        break;
+                    }
+
+                }
+                foreach (KeyValuePair<string, JSONNode> card in winner.Value["cards"])
+                {
+                    colour.Add(card.Value["colour"]);
+                    value.Add(card.Value["value"]);               
+                }
+                RoundWinner _winner = new RoundWinner(_username, colour, value);
+
+                Debug.Log("WINNERS CARDS");
+                foreach(int c in _winner.colour){
+                    Debug.Log(c);
+                }
+
+                winners.Add(_winner);
+            }
+            is_winner=false;
+        }
+        HandleRoundWinnerPanel(winners);
+
+
+    }
+
+    public void HandleRoundWinnerPanel(List<RoundWinner> winners){
+
+        //test variables
+        int winners_length= 6;
+        int cards_count=5;
+
+        int [] c = new int[5];
+        int [] v = new int[5];
+
+        GameObject _winners=  Instantiate(winner_data_text, new Vector3(0,0,0), Quaternion.identity);
+
+        round_winner_panel.GetComponent<Image>().color= new Color(1.0f,0.95f,0.68f,0.53f);
+
+        _winners.GetComponent<Text>().text=LocalizationSettings.StringDatabase.GetLocalizedString("UI", "winners");
+        _winners.transform.SetParent(round_winner_panel.transform,false);
+
+        foreach(RoundWinner winner in winners){
+            Array.Clear(c,0,c.Length);
+            Array.Clear(v,0,v.Length);
+
+            GameObject _winner=  Instantiate(winner_data_text, new Vector3(0,0,0), Quaternion.identity);
+            _winner.GetComponent<Text>().text=winner.username;
+            _winner.transform.SetParent(round_winner_panel.transform,false);
+
+            GameObject panel=  Instantiate(winner_data_panel, new Vector3(0,0,0), Quaternion.identity);
+            //cards
+            int i=0;
+            Debug.Log("Dodaję kolory od winnera");
+            foreach(int z in winner.colour){
+                c[i]=z;
+                Debug.Log("Kolor:" + c[i]);
+                i+=1;
+            }
+            i=0;
+            Debug.Log("Dodaję wartości od winnera");
+            Debug.Log("WINNER VALUE COUNT: " +winner.value.Count);
+            Debug.Log("WINNER COLOUR COUNT: " +winner.colour.Count);
+
+            foreach( int x in winner.value){
+                Debug.Log("Wartość:" + v[i]);
+                v[i]=x;
+                i+=1;
+
+            }
+            for(int j =0; j< winner.value.Count; j++){
+                int x = (c[j]-1) * 13 + (v[j]-2);
+                Debug.Log("IKS: " + x);
+                Debug.Log("c[j]: " + c[j]);
+                Debug.Log("v[j]: " + v[j]);
+
+                GameObject card = Instantiate(cards[x], new Vector3(0,0,0), Quaternion.identity);
+                card.transform.SetParent(panel.transform, false);
+            }
+        
+            panel.transform.SetParent(round_winner_panel.transform, false);
+
+
+        }
+
+
+    }
+
+    void ClearRoundWinnerPanel(){
+        round_winner_panel.GetComponent<Image>().color= new Color(1.0f,0.95f,0.68f,0.0f);
+        for(int x=round_winner_panel.transform.childCount-1; x>=0; x--){
+            DestroyImmediate(round_winner_panel.transform.GetChild(x).gameObject);
+        }
+
     }
 
     public void Exit(){
