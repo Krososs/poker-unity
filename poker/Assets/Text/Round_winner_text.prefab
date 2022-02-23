@@ -8,6 +8,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2161579533384505986, guid: 310d11bca7d8a1a4980bcedd7674d168, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2161579533384505986, guid: 310d11bca7d8a1a4980bcedd7674d168, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2161579533384505986, guid: 310d11bca7d8a1a4980bcedd7674d168, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2161579533384505986, guid: 310d11bca7d8a1a4980bcedd7674d168, type: 3}
       propertyPath: m_FontData.m_FontSize
       value: 15
       objectReference: {fileID: 0}
